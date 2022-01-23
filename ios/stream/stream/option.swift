@@ -29,7 +29,7 @@ public func Port(_ port:Int) -> Option {
   }
 }
 
-public func Tls(_ tls:Bool) -> Option {
+public func TLS(_ tls:Bool) -> Option {
   return {(config: inout Config)->Void in
     config.tls = tls
   }
