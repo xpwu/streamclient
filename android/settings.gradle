@@ -1,0 +1,3 @@
+include ':streamtest'
+include ':app'
+rootProject.name = "Stream"
