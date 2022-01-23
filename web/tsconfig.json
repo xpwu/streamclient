@@ -14,6 +14,6 @@
     "noImplicitThis": true
   },
   "include": [
-    "src"
+    "stream"
   ]
 }
