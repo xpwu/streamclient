@@ -46,7 +46,7 @@ public class Client {
     this.impl.pushCallback = new PushCallback() {
       @Override
       public void onPush(byte[] data) {
-        // 异步回到push
+        // 异步回调push
         new Handler().post(new Runnable() {
           @Override
           public void run() {
