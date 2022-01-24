@@ -58,7 +58,18 @@ public class Client {
   }
 
   public void setPeerClosedCallback(PeerClosedCallback delegate) {
-    this.impl.peerClosedCallback = delegate;
+    this.impl.peerClosedCallback = new PeerClosedCallback() {
+      @Override
+      public void onPeerClosed() {
+        // 异步回调 PeerClosedCallback
+        new Handler().post(new Runnable() {
+          @Override
+          public void run() {
+            delegate.onPeerClosed();
+          }
+        });
+      }
+    };
   }
 
   public void setNet(Net net) {

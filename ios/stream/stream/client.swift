@@ -52,7 +52,12 @@ public extension Client {
   }
   
   func onPeerClosed(_ peerClosed:@escaping ()->Void) {
-    impl.onPeerClosed = peerClosed
+    impl.onPeerClosed = {()->Void in
+      // 异步回调 peerClosed
+      async {
+        peerClosed()
+      }
+    }
   }
 }
 
