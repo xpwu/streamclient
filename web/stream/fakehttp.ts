@@ -69,8 +69,8 @@ export class Request {
     (new DataView(this.buffer)).setUint32(0, id);
   }
 
-  public async sendTo(conn: Net): Promise<Error | null> {
-    return await conn.Write(this.buffer);
+  public async sendTo(net: Net): Promise<Error | null> {
+    return await net.Write(this.buffer);
   }
 }
 
