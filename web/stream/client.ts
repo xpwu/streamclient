@@ -1,19 +1,28 @@
 
 import {Request, Response, Status} from "./fakehttp";
 import {Net} from "./net"
+import {option, Option} from "./option"
+import {Millisecond} from "./duration"
 
 export class Client {
-  private readonly conn: Net;
+  private readonly net: Net;
   private allReq: Map<number, (res: Response) => void>;
   private reqId: number;
-  private onPush: (res:string)=>void = (res:string)=>{};
+  private onPush: (res:string)=>Promise<void> = (res:string)=>{return Promise.resolve()};
+  private onPeerClosed: ()=>Promise<void> = ()=>{return Promise.resolve()};
+  private op = new option
 
-  constructor(wss: string) {
+  // ws or wss 协议。
+  constructor(wss: string, ...opf: Option[]) {
     if (wss.indexOf("s://") == -1) {
       wss = "ws://" + wss;
     }
 
-    this.conn = new Net(wss, {
+    for (let o of opf) {
+      o(this.op)
+    }
+
+    this.net = new Net(wss, this.op.connectTimeout, {
       onMessage: (value: string | ArrayBuffer): void => {
         // 类型不对，直接返回
         if (typeof value === "string") {
@@ -23,7 +32,8 @@ export class Client {
 
         let res = new Response(value);
         if (res.isPush()) {
-          this.onPush(res.data());
+          // 异步执行
+          let _ = this.onPush(res.data())
           return;
         }
 
@@ -36,6 +46,9 @@ export class Client {
           value(Response.fromError(key, new Error(result.reason)))
         });
         this.allReq.clear()
+
+        // 异步执行
+        let _ = this.onPeerClosed()
       }
     });
 
@@ -44,18 +57,18 @@ export class Client {
     this.allReq = new Map();
   }
 
-  public setPushCallback(clb :(res:string)=>void) {
+  public setPushCallback(clb :(res:string)=>Promise<void>) {
     this.onPush = clb;
   }
 
-  public async connect(): Promise<Error | null> {
-    return this.conn.Connect();
+  public setPeerClosedCallback(clb :()=>Promise<void>) {
+    this.onPeerClosed = clb;
   }
 
-  public async connectAndSend(data: ArrayBuffer | string, header?: Map<string, string>)
+  public async Send(data: ArrayBuffer | string, header?: Map<string, string>)
     : Promise<[string, Error | null]> {
 
-    let err = await this.conn.Connect();
+    let err = await this.net.Connect();
     if (err != null) {
       return ["", err];
     }
@@ -63,7 +76,7 @@ export class Client {
     let req = new Request(data, header);
     let reqId = this.reqId++;
     req.SetReqId(reqId);
-    err = await req.sendTo(this.conn);
+    err = await req.sendTo(this.net);
     if (err != null) {
       return ["", err];
     }
@@ -79,10 +92,11 @@ export class Client {
           resolve([res.data(), null]);
         });
 
-        // 暂时用定时的方式来处理。
         setTimeout(()=>{
           resolve(["", new Error("timeout")]);
-        }, 60*1000);
+        }, this.op.requestTimeout/Millisecond);
       })
   }
+
 }
+
