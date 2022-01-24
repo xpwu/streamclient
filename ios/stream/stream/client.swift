@@ -22,18 +22,13 @@ public class Client{
 
 // 最常用接口
 public extension Client {
-  // 无论当前连接状态，都可以重复调用，如果连接成功，确保最后的状态为连接
-  // 无论多少次调用，最后都只有一条连接
-  func connect(onSuccess:@escaping ()->Void, onFailed:@escaping (Error)->Void) {
-    impl.connect(onSuccess, onFailed)
-  }
-  
+
   // 自动连接并发送数据
-  func connectAndSend(data:[Byte], headers:[String:String]
+  func Send(data:[Byte], headers:[String:String]
                       , onSuccess:@escaping (([Byte])->Void)
                       , onFailed:@escaping ((Error)->Void)) {
     connect {[unowned self] in
-      self.send(data: data, headers: headers, onSuccess: onSuccess, onFailed: onFailed)
+      self.onlySend(data: data, headers: headers, onSuccess: onSuccess, onFailed: onFailed)
     } onFailed: { (error:Error) in
       onFailed(error)
     }
@@ -61,15 +56,23 @@ public extension Client {
   }
 }
 
+// 暂时不暴露以下接口，稳定性还需再测试
+
 // 次常用接口
-public extension Client {
+extension Client {
+  // 无论当前连接状态，都可以重复调用，如果连接成功，确保最后的状态为连接
+  // 无论多少次调用，最后都只有一条连接
+  func connect(onSuccess:@escaping ()->Void, onFailed:@escaping (Error)->Void) {
+    impl.connect(onSuccess, onFailed)
+  }
+  
   // 无论当前连接状态，都可以重复调用，并确保最后的状态为关闭
   func close() {
     impl.close()
   }
   
   // 如果还没有连接，返回失败
-  func send(data:[Byte], headers:[String:String]
+  func onlySend(data:[Byte], headers:[String:String]
             , onSuccess:@escaping (([Byte])->Void), onFailed:@escaping ((Error)->Void)) {
     impl.send(data, headers, onSuccess, onFailed)
   }

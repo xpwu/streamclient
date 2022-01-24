@@ -7,14 +7,6 @@ import java.util.Map;
 
 public class Client {
 
-  public interface PushCallback {
-    void onPush(byte[] data);
-  }
-
-  public interface PeerClosedCallback {
-    void onPeerClosed();
-  }
-
   public Client(Option ...options) {
     Option.Value value = new Option.Value();
     for (Option op : options) {
@@ -42,6 +34,10 @@ public class Client {
     impl.setNet(new LenContent());
   }
 
+
+  public interface PushCallback {
+    void onPush(byte[] data);
+  }
   public void setPushCallback(PushCallback delegate) {
     this.impl.pushCallback = new PushCallback() {
       @Override
@@ -57,6 +53,10 @@ public class Client {
     };
   }
 
+
+  public interface PeerClosedCallback {
+    void onPeerClosed();
+  }
   public void setPeerClosedCallback(PeerClosedCallback delegate) {
     this.impl.peerClosedCallback = new PeerClosedCallback() {
       @Override
@@ -72,43 +72,19 @@ public class Client {
     };
   }
 
-  public void setNet(Net net) {
-    this.impl.setNet(net);
-  }
 
   public interface ErrorHandler {
     void onFailed(Error error);
   }
-
-  public interface ConnectHandler extends ErrorHandler{
-    void onSuccess();
-  }
-  // 无论当前连接状态，都可以重复调用，如果连接成功，确保最后的状态为连接
-  // 无论多少次调用，最后都只有一条连接
-  public void connect(ConnectHandler handler) {
-    impl.connect(handler);
-  }
-
-  // 无论当前连接状态，都可以重复调用，并确保最后的状态为关闭
-  public void close() {
-    impl.close();
-  }
-
-
   public interface ResponseHandler extends ErrorHandler{
     void onSuccess(byte[] response);
   }
-  // 如果还没有连接，返回失败
-  public void send(byte[] data, Map<String, String> headers, ResponseHandler handler) {
-    impl.send(data, headers, handler);
-  }
-
   // 自动连接并发送数据
-  public void connectAndSend(byte[] data, Map<String, String> headers, ResponseHandler handler) {
+  public void Send(byte[] data, Map<String, String> headers, ResponseHandler handler) {
     connect(new ConnectHandler() {
       @Override
       public void onSuccess() {
-        send(data, headers, handler);
+        onlySend(data, headers, handler);
       }
 
       @Override
@@ -117,6 +93,33 @@ public class Client {
       }
     });
   }
+
+  // 暂不暴露以下接口，需要进一步验证其稳定性
+
+  private void setNet(Net net) {
+    this.impl.setNet(net);
+  }
+
+  interface ConnectHandler extends ErrorHandler{
+    void onSuccess();
+  }
+  // 无论当前连接状态，都可以重复调用，如果连接成功，确保最后的状态为连接
+  // 无论多少次调用，最后都只有一条连接
+  void connect(ConnectHandler handler) {
+    impl.connect(handler);
+  }
+
+  // 无论当前连接状态，都可以重复调用，并确保最后的状态为关闭
+  void close() {
+    impl.close();
+  }
+
+
+  // 如果还没有连接，返回失败
+  void onlySend(byte[] data, Map<String, String> headers, ResponseHandler handler) {
+    impl.send(data, headers, handler);
+  }
+
 
   private final ClientImpl impl;
 }

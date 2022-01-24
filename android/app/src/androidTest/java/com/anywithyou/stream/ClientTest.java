@@ -246,7 +246,7 @@ public class ClientTest {
     RunTest(client -> {
 
       add();
-      client.send("test".getBytes(), new HashMap<>(), new Client.ResponseHandler() {
+      client.onlySend("test".getBytes(), new HashMap<>(), new Client.ResponseHandler() {
         @Override
         public void onSuccess(byte[] response) {
           Log.w("testSend", "onSuccess: " + new String(response));
@@ -284,7 +284,7 @@ public class ClientTest {
       headers.put("api", "/Sum");
 
       add();
-      client.connectAndSend(new Gson().toJson(request1).getBytes()
+      client.Send(new Gson().toJson(request1).getBytes()
         , headers, new Client.ResponseHandler() {
           @Override
           public void onSuccess(byte[] response) {
@@ -310,7 +310,7 @@ public class ClientTest {
       request2.Numbers.add(5);
       request2.Numbers.add(29);
       request2.Numbers.add(30);
-      client.connectAndSend(new Gson().toJson(request2).getBytes()
+      client.Send(new Gson().toJson(request2).getBytes()
         , headers, new Client.ResponseHandler() {
           @Override
           public void onSuccess(byte[] response) {
@@ -349,7 +349,7 @@ public class ClientTest {
       });
 
       add();
-      client.connectAndSend(new Gson().toJson(request1).getBytes()
+      client.Send(new Gson().toJson(request1).getBytes()
         , headers, new Client.ResponseHandler() {
           @Override
           public void onSuccess(byte[] response) {
