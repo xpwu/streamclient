@@ -39,7 +39,22 @@ client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数
 
 
 ## web
-...
+### request
+1、创建client    
+```
+Client client = new Client("wss://xxxxxx");
+```
+2、client.Send(xxx) 即可像短连接一样发送请求，同一个client上的所有
+请求都是在一条连接中发送。    
+
+### push  
+client.setPushCallback(xxx) 即可设定push的接收函数     
+
+### connect closed
+client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数      
+
+### 使用  
+直接把stream目录中所有内容放入工程中
 
 ## wxapp
 ...
