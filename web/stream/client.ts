@@ -3,6 +3,7 @@ import {Request, Response, Status} from "./fakehttp";
 import {Net} from "./net"
 import {option, Option} from "./option"
 import {Millisecond} from "./duration"
+import {CloseEvent} from "./connection"
 
 export class Client {
   private readonly net: Net;

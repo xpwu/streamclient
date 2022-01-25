@@ -11,7 +11,6 @@ export interface MessageEvent extends Event{
 export interface CloseEvent extends Event{
   readonly code: number;
   readonly reason: string;
-  readonly wasClean: boolean;
 }
 
 export interface ErrorEvent extends Event{
