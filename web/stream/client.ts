@@ -38,6 +38,7 @@ export class Client {
         }
 
         let clb = this.allReq.get(res.reqID()) || ((res: Response) => {});
+        this.net.receivedOneResponse()
         clb(res);
         this.allReq.delete(res.reqID());
 
@@ -76,7 +77,7 @@ export class Client {
     let req = new Request(data, header);
     let reqId = this.reqId++;
     req.SetReqId(reqId);
-    err = await req.sendTo(this.net);
+    err = await this.net.Write(req.ToData());
     if (err != null) {
       return ["", err];
     }
@@ -93,6 +94,7 @@ export class Client {
         });
 
         setTimeout(()=>{
+          this.allReq.delete(reqId)
           resolve(["", new Error("timeout")]);
         }, this.op.requestTimeout/Millisecond);
       })

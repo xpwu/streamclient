@@ -25,7 +25,6 @@
  */
 
 import {Utf8} from "./utf8";
-import {Net} from "./net"
 
 export class Request {
   private readonly buffer: ArrayBuffer;
@@ -69,9 +68,10 @@ export class Request {
     (new DataView(this.buffer)).setUint32(0, id);
   }
 
-  public async sendTo(net: Net): Promise<Error | null> {
-    return await net.Write(this.buffer);
+  public ToData():ArrayBuffer {
+    return this.buffer
   }
+
 }
 
 export enum Status {
