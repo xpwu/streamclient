@@ -1,6 +1,7 @@
 # streamclient
 go-stream 对应的客户端sdk，包括ios android web wxapp。    
-
+  
+  
 ## ios  
 ### request
 1、创建 client。    
@@ -18,7 +19,8 @@ client.onPeerClosed(func ) 即可设定网络closed的接收函数
 
 ### 使用  
 直接把stream目录放入工程中     
-
+  
+  
 ## android
 ### request
 1、创建client    
@@ -36,8 +38,8 @@ client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数
 
 ### 使用  
 新建一个module, 直接把app/src/main/java目录中 com.anywithyou.stream 包的所有内容放入工程中    
-
-
+  
+  
 ## web
 ### request
 1、创建client    
@@ -55,7 +57,8 @@ client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数
 
 ### 使用  
 直接把stream目录中所有内容放入工程中。tsconfig.json 使用实际项目中的相应文件
-
+  
+  
 ## wxapp
 ### request
 1、创建client    
