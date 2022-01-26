@@ -141,6 +141,10 @@ export class Connection {
     return null
   }
 
+  public SendForce(data: ArrayBuffer) {
+    this.websocket.send(data)
+  }
+
   public close() {
     this.websocket.close()
   }

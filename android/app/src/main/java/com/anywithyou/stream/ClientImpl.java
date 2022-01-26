@@ -217,6 +217,8 @@ class ClientImpl {
         }
 
         if (response.isPush()) {
+          // push ack 强制写给网络，不计入并发控制
+          net.sendForce(response.newPushAck());
           pushCallback.onPush(response.data);
           return;
         }

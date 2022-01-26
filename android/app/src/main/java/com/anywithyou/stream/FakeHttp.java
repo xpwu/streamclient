@@ -116,11 +116,17 @@ class FakeHttp {
       }
       this.reqID = reqID;
 
-      if (response.length <= 5) {
+      int offset = 5;
+      if (reqID == 1) {
+        this.pushID = Arrays.copyOfRange(response, offset, offset+4);
+        offset += 4;
+      }
+
+      if (response.length <= offset) {
         this.data = null;
       } else {
         try {
-          this.data = Arrays.copyOfRange(response, 5, response.length);
+          this.data = Arrays.copyOfRange(response, offset, response.length);
         } catch (Exception e) {
           Log.e("fakeHttp.response", "rawData error", e);
           throw e;
@@ -132,9 +138,31 @@ class FakeHttp {
       return reqID == 1;
     }
 
+    public byte[] newPushAck() {
+      if (!isPush() || pushID.length != 4) {
+        return new byte[0];
+      }
+
+      byte[] data = new byte[4+1+4];
+      data[0] = (byte) ((reqID & 0xff000000) >> 24);
+      data[1] = (byte) ((reqID & 0xff0000) >> 16);
+      data[2] = (byte) ((reqID & 0xff00) >> 8);
+      data[3] = (byte) (reqID & 0xff);
+
+      data[4] = 0;
+
+      data[5] = pushID[0];
+      data[6] = pushID[1];
+      data[7] = pushID[2];
+      data[8] = pushID[3];
+
+      return data;
+    }
+
     public final Status status;
     public final long reqID;
     public final byte[] data;
+    private byte[] pushID = null;
 
     private Response(long reqID, Status status, byte[] data) {
       this.reqID = reqID;

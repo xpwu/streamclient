@@ -95,7 +95,7 @@ export class Net {
           this.handle.onError();
         }
 
-        this.handle.onClose({code: -1, reason: "onerror", wasClean:true});
+        this.handle.onClose({code: -1, reason: "onerror"});
         this.conn!.close();
         this.conn = null;
         this.connected = false;
@@ -110,6 +110,10 @@ export class Net {
     }
 
     return this.conn.send(data)
+  }
+
+  public WriteForce(data: ArrayBuffer) {
+    this.conn?.SendForce(data)
   }
 
   public receivedOneResponse():void {

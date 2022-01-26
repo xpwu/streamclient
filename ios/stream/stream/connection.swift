@@ -173,6 +173,14 @@ extension Connection {
     return nil
   }
   
+  func sendForce(_ data:[Byte]) {
+    var len:[Byte] = [0, 0, 0, 0]
+    UInt32(data.count + 4).toNet(&len)
+    
+    sendBuffer += len + data
+    trySend()
+  }
+  
   private func _send() {
     if concurrent >= maxConcurrent {
       return
@@ -184,6 +192,8 @@ extension Connection {
     concurrent += 1
     
     let data = waitForSending.removeFirst()
+    
+    // todo: test calling sendForce()
     var len:[Byte] = [0, 0, 0, 0]
     UInt32(data.count + 4).toNet(&len)
     

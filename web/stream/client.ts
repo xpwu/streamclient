@@ -33,6 +33,8 @@ export class Client {
 
         let res = new Response(value);
         if (res.isPush()) {
+          // push ack 强制写给网络，不计入并发控制
+          this.net.WriteForce(res.newPushAck())
           // 异步执行
           let _ = this.onPush(res.data())
           return;
@@ -83,6 +85,7 @@ export class Client {
       return ["", err];
     }
 
+    // todo 响应需要放到请求前
     return new Promise<[string, Error | null]>(
       (resolve: (ret: [string, Error | null ]) => void, reject) => {
         this.allReq.set(reqId, (res:Response)=>{

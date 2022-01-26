@@ -11,6 +11,11 @@
      header-end-flag: 1 byte, === 0;
      data:       [optional]
 
+      reqid = 1: client push ack to server.
+            ack: no headers;
+            data: pushId. 4 bytes, net order;
+
+ ---------------------------------------------------------------------
    response ---
      reqid | status | data
      reqid: 4 bytes, net order;
@@ -20,7 +25,9 @@
 
 
     reqid = 1: server push to client
-
+        status: 0
+          data: first 4 bytes --- pushId, net order;
+                last --- real data
 
  */
 
@@ -94,16 +101,37 @@ export class Response {
   }
 
   public data():string {
-    if (this.buffer.byteLength == 5) {
+
+    let offset = 5
+    if (this.isPush()) {
+      // pushId
+      offset += 4
+    }
+
+    if (this.buffer.byteLength <= offset) {
       return ""
     }
 
-    let utf8 = new Utf8(this.buffer.slice(5));
+    let utf8 = new Utf8(this.buffer.slice(offset));
     return utf8.toString();
   }
 
   public isPush():boolean {
     return this.reqID() === 1;
+  }
+
+  public newPushAck(): ArrayBuffer {
+    if (!this.isPush() || this.buffer.byteLength <= 4+1+4) {
+      return new ArrayBuffer(0)
+    }
+
+    let ret = new ArrayBuffer(4 + 1 + 4)
+    let view = new DataView(ret)
+    view.setUint32(0, 1)
+    view.setUint8(4, 0)
+    view.setUint32(5, (new DataView(this.buffer)).getUint32(5))
+
+    return ret
   }
 
   public static fromError(reqId:number, err: Error):Response {

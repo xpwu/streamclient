@@ -28,6 +28,7 @@ public interface Net {
   void close();
 
   void send(byte[] content) throws Exception;
+  void sendForce(byte[] content);
   void receivedOneResponse();
 
   void setDelegate(Delegate delegate);

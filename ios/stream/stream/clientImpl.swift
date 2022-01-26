@@ -169,6 +169,8 @@ extension ClientImpl {
       let response = FakeHttp.Response(message)
       
       if (response.isPush()) {
+        // push ack 强制写给网络，不计入并发控制
+        self.net.sendForce(response.newPushACK())
         self.onPush(response.data)
         return
       }

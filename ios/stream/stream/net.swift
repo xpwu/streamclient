@@ -13,6 +13,7 @@ public protocol Net {
   func connect(host:String, port:Int, tls:Bool)
   func close()
   func send(_:[Byte])->Error?
+  func sendForce(_:[Byte])
   func receivedOneResponse()
   
   func setConfig(connectTimeout:Duration)

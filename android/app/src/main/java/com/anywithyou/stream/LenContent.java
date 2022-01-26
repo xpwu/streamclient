@@ -577,6 +577,18 @@ class LenContent implements Net {
       _send();
     }
 
+    public void sendForce(byte[] content) {
+      byte[] len = new byte[4];
+      int length = content.length + 4;
+      Binary.Host2Net(length, len);
+
+      synchronized (sendData) {
+        sendData.add(len);
+        sendData.add(content);
+        sendData.notify();
+      }
+    }
+
     private void _send() {
       if (concurrent >= config.MaxConcurrent) {
         return;
@@ -589,6 +601,7 @@ class LenContent implements Net {
 
       byte[] content = waitForSending.remove(0);
 
+      // todo : test calling sendForce()
       byte[] len = new byte[4];
       int length = content.length + 4;
       Binary.Host2Net(length, len);
@@ -630,6 +643,11 @@ class LenContent implements Net {
   @Override
   public void send(byte[] content) throws Exception{
     connection.send(content);
+  }
+
+  @Override
+  public void sendForce(byte[] content) {
+    connection.sendForce(content);
   }
 
   @Override

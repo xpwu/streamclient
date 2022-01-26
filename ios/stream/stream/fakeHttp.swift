@@ -9,26 +9,36 @@ import Foundation
 
 
 /**
- * content protocol:
- *    request ---
- *      reqid | headers | header-end-flag | data
- *        reqid: 4 bytes, net order;
- *        headers: < key-len | key | value-len | value > ... ;  [optional]
- *          key-len: 1 byte,  key-len = sizeof(key);
- *          value-len: 1 byte, value-len = sizeof(value);
- *        header-end-flag: 1 byte, === 0;
- *        data:       [optional]
- *
- *    response ---
- *      reqid | status | data
- *        reqid: 4 bytes, net order;
- *        status: 1 byte, 0---success, 1---failed
- *        data: if status==success, data=<app data>    [optional]
- *              if status==failed, data=<error reason>
- *
- *     reqid = 1: server push to client
- *
- */
+
+content protocol:
+     request ---
+       reqid | headers | header-end-flag | data
+         reqid: 4 bytes, net order;
+         headers: < key-len | key | value-len | value > ... ;  [optional]
+           key-len: 1 byte,  key-len = sizeof(key);
+           value-len: 1 byte, value-len = sizeof(value);
+         header-end-flag: 1 byte, === 0;
+         data:       [optional]
+
+    reqid = 1: client push ack to server.
+          ack: no headers;
+          data: pushId. 4 bytes, net order;
+
+  ---------------------------------------------------------------------
+     response ---
+       reqid | status | data
+         reqid: 4 bytes, net order;
+         status: 1 byte, 0---success, 1---failed
+         data: if status==success, data=<app data>    [optional]
+               if status==failed, data=<error reason>
+
+
+     reqid = 1: server push to client
+        status: 0
+        data: first 4 bytes --- pushId, net order;
+              last --- real data
+
+*/
 
 struct FakeHttp{
   struct Request {
@@ -85,10 +95,17 @@ struct FakeHttp{
       for i in 0..<4 {
         reqId = UInt32(reqId << 8) + UInt32(res[i] & 0xff)
       }
-      if (res.count <= 5) {
+      
+      var offset = 5
+      // push
+      if reqId == 1 {
+        pushID = [Byte](res[offset..<offset+4])
+        offset += 4
+      }
+      if (res.count <= offset) {
         data = []
       } else {
-        data = [Byte](res[5...])
+        data = [Byte](res[offset...])
       }
     }
     
@@ -96,9 +113,24 @@ struct FakeHttp{
       return reqId == 1
     }
     
+    func newPushACK() -> [Byte] {
+      if (!isPush() || pushID.count != 4) {
+        return []
+      }
+      var data = [Byte](repeating: 0, count: 4)
+      data[0] = Byte((reqId & 0xff000000) >> 24)
+      data[1] = Byte((reqId & 0xff0000) >> 16)
+      data[2] = Byte((reqId & 0xff00) >> 8)
+      data[3] = Byte(reqId & 0xff)
+      data.append(0) // end-of-headers
+      
+      data.append(contentsOf: pushID)
+    }
+    
     let status:Status
     var reqId:UInt32
     let data:[Byte]
+    var pushID:[Byte]
     
     private init(reqId:UInt32, status:Status, data:[Byte]) {
       self.reqId = reqId
