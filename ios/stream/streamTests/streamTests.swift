@@ -169,7 +169,7 @@ class streamTests: XCTestCase {
     let request = Request(Numbers: [20, 50, 60])
     let data = try! JSONEncoder().encode(request)
     
-    client?.connectAndSend(data: [Byte](data), headers: ["api":"/Sum"], onSuccess: {
+    client?.Send(data: [Byte](data), headers: ["api":"/Sum"], onSuccess: {
       [unowned self](data: [Byte]) in
       let res = try! JSONDecoder().decode(Response.self, from: Data(data))
       print(res)
