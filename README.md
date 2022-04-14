@@ -17,6 +17,9 @@ client.onPush(func ) 即可设定push的接收函数
 ### connect closed
 client.onPeerClosed(func ) 即可设定网络closed的接收函数   
 
+### recover connection
+client.recover(func ) 恢复被断开的网络，可多次调用   
+
 ### 使用  
 直接把stream目录放入工程中     
   
@@ -35,6 +38,9 @@ client.setPushCallback(xxx) 即可设定push的接收函数
 
 ### connect closed
 client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数      
+
+### recover connection
+client.recover(func ) 恢复被断开的网络，可多次调用   
 
 ### 使用  
 新建一个module, 直接把app/src/main/java目录中 com.anywithyou.stream 包的所有内容放入工程中    
@@ -55,6 +61,9 @@ client.setPushCallback(xxx) 即可设定push的接收函数
 ### connect closed
 client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数      
 
+### recover connection
+client.recover(func ) 恢复被断开的网络，可多次调用   
+
 ### 使用  
 直接把stream目录中所有内容放入工程中。tsconfig.json 使用实际项目中的相应文件
   
@@ -72,7 +81,10 @@ Client client = new Client("wss://xxxxxx");
 client.setPushCallback(xxx) 即可设定push的接收函数     
 
 ### connect closed
-client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数      
+client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数     
+
+### recover connection
+client.recover(func ) 恢复被断开的网络，可多次调用    
 
 ### 使用  
 直接把stream目录中所有内容放入工程中。miniprogram-api-typings 目录是微信提供的ts typings，

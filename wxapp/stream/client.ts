@@ -69,7 +69,7 @@ export class Client {
     this.onPeerClosed = clb;
   }
 
-  public async Send(data: ArrayBuffer | string, header?: Map<string, string>)
+  public async send(data: ArrayBuffer | string, header?: Map<string, string>)
     : Promise<[string, Error | null]> {
 
     let err = await this.net.Connect();
@@ -104,5 +104,8 @@ export class Client {
       })
   }
 
+  public async recover(): Promise<Error|null> {
+    return this.net.Connect();
+  }
 }
 

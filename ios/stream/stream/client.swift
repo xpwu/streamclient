@@ -33,6 +33,10 @@ public extension Client {
       onFailed(error)
     }
   }
+  
+  func recover(onSuccess:@escaping ()->Void, onFailed:@escaping (Error)->Void) {
+    connect(onSuccess: onSuccess, onFailed: onFailed)
+  }
 }
 
 // 回调

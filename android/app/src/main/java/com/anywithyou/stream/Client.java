@@ -94,6 +94,11 @@ public class Client {
     });
   }
 
+  interface RecoverHandler extends ConnectHandler {}
+  public void Recover(RecoverHandler handler) {
+    connect(handler);
+  }
+
   // 暂不暴露以下接口，需要进一步验证其稳定性
 
   private void setNet(Net net) {
