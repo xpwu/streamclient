@@ -1,4 +1,4 @@
-import {DomWebSocket} from "./websocket"
+import {WxWebSocket} from "./websocket"
 
 export interface Event {
 
@@ -45,7 +45,7 @@ export class Connection {
   private websocket: WebSocketInterface;
 
   constructor(url: string) {
-    this.websocket = new DomWebSocket(url)
+    this.websocket = new WxWebSocket(url)
 
     this.websocket.onclose = (ev: CloseEvent)=>{
       this.onclose(ev)
