@@ -19,7 +19,7 @@ export class DomWebSocket implements WebSocketInterface{
     }
     this.websocket.onerror = (ev: Event)=>{
       console.error("DomWebSocket---onerror")
-      this.onerror({errMsg: "DomWebSocket: inner error. " + ev.toString()})
+      this.onerror({errMsg: "DomWebSocket: onerror. " + ev.toString()})
     }
     this.websocket.onmessage = (ev: MessageEvent)=>{
       this.onmessage(ev)
