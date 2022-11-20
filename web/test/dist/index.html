@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>test stream</title>
+
+  <script src="jquery.min.js"></script>
+  <script>
+    function send() {
+      console.log("send")
+    }
+  </script>
+<script defer src="bundle.js"></script></head>
+<body>
+  <h1>this is only test stream.client.</h1>
+  <div>
+    ws(s): <input type="text" id="wss" placeholder="host:port"> <br>
+    <br>
+    headers: <br>
+    key:   <input type="text" id="key1">  <br>
+    value: <input type="text" id="value1"> <br><br>
+    key:   <input type="text" id="key2">  <br>
+    value: <input type="text" id="value2"> <br><br>
+    key:   <input type="text" id="key3">  <br>
+    value: <input type="text" id="value3"> <br><br>
+
+    post data: <br>
+    <textarea rows="10" cols="100" id="post"></textarea>
+    <br>
+    <button id="send" type="button">发送</button>
+    <br>
+
+  </div>
+
+</body>
+</html>

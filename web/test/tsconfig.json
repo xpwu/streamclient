@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "module": "ES6",
+    "target": "ES6",
+    "moduleResolution": "node",
+
+    "outDir": "dist",
+    "sourceMap": true,
+    "noEmit": false,
+
+    "lib": ["es2015", "es2017", "es2016", "dom"],
+    "experimentalDecorators": true,
+
+    "downlevelIteration": true,
+    "allowJs": false,
+    "esModuleInterop": true,
+
+    "strict": true,
+
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": [
+    "../stream",
+    "./index.ts"
+  ],
+  "exclude": ["node_modules/**/*"]
+}
