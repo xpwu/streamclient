@@ -12,10 +12,13 @@ export class DomWebSocket implements WebSocketInterface{
 
   constructor(url: string) {
     this.websocket = new WebSocket(url)
+    this.websocket.binaryType = "arraybuffer"
     this.websocket.onclose = (ev: CloseEvent)=>{
+      console.warn("DomWebSocket---onclose")
       this.onclose(ev)
     }
     this.websocket.onerror = (ev: Event)=>{
+      console.error("DomWebSocket---onerror")
       this.onerror({errMsg: "DomWebSocket: inner error. " + ev.toString()})
     }
     this.websocket.onmessage = (ev: MessageEvent)=>{

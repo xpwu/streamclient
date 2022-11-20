@@ -116,35 +116,36 @@ export class Utf8 {
       ? 3 : nChar < 0x200000 ? 4 : nChar < 0x4000000 ? 5 : 6;
   }
 
-  private static loadUTF16CharCode(aChars: Uint16Array, nIdx: number): number {
 
-    /* UTF-16 to DOMString decoding algorithm */
-    let nFrstChr = aChars[nIdx];
-
-    return nFrstChr > 0xD7BF /* 55231 */ && nIdx + 1 < aChars.length ?
-      (nFrstChr - 0xD800 /* 55296 */ << 10) + aChars[nIdx + 1] + 0x2400 /* 9216 */
-      : nFrstChr;
-  }
-
-  private static putUTF16CharCode(aTarget: Uint16Array, nChar: number, nPutAt: number):number {
-
-    let nIdx = nPutAt;
-
-    if (nChar < 0x10000 /* 65536 */) {
-      /* one element */
-      aTarget[nIdx++] = nChar;
-    } else {
-      /* two elements */
-      aTarget[nIdx++] = 0xD7C0 /* 55232 */ + (nChar >>> 10);
-      aTarget[nIdx++] = 0xDC00 /* 56320 */ + (nChar & 0x3FF /* 1023 */);
-    }
-
-    return nIdx;
-  }
-
-  private static getUTF16CharLength(nChar: number): number {
-    return nChar < 0x10000 ? 1 : 2;
-  }
+  // private static loadUTF16CharCode(aChars: Uint16Array, nIdx: number): number {
+  //
+  //   /* UTF-16 to DOMString decoding algorithm */
+  //   let nFrstChr = aChars[nIdx];
+  //
+  //   return nFrstChr > 0xD7BF /* 55231 */ && nIdx + 1 < aChars.length ?
+  //     (nFrstChr - 0xD800 /* 55296 */ << 10) + aChars[nIdx + 1] + 0x2400 /* 9216 */
+  //     : nFrstChr;
+  // }
+  //
+  // private static putUTF16CharCode(aTarget: Uint16Array, nChar: number, nPutAt: number):number {
+  //
+  //   let nIdx = nPutAt;
+  //
+  //   if (nChar < 0x10000 /* 65536 */) {
+  //     /* one element */
+  //     aTarget[nIdx++] = nChar;
+  //   } else {
+  //     /* two elements */
+  //     aTarget[nIdx++] = 0xD7C0 /* 55232 */ + (nChar >>> 10);
+  //     aTarget[nIdx++] = 0xDC00 /* 56320 */ + (nChar & 0x3FF /* 1023 */);
+  //   }
+  //
+  //   return nIdx;
+  // }
+  //
+  // private static getUTF16CharLength(nChar: number): number {
+  //   return nChar < 0x10000 ? 1 : 2;
+  // }
 
   public toString():string {
     if (this.str != null) {

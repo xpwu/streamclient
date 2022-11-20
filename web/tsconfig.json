@@ -1,19 +1,29 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
     "module": "ES6",
-    "target": "es6",
-    "noImplicitReturns": true,
-    "strict": true,
-    "alwaysStrict": true,
-    "pretty": true,
-    "experimentalDecorators": true,
+    "target": "ES6",
     "moduleResolution": "node",
+
+    "outDir": "dist",
+    "sourceMap": true,
     "noEmit": false,
+
+    "lib": ["es2015", "es2017", "es2016", "dom"],
+    "experimentalDecorators": true,
+
     "downlevelIteration": true,
-    "noImplicitThis": true
+    "allowJs": false,
+    "esModuleInterop": true,
+
+    "strict": true,
+
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
     "stream"
-  ]
+  ],
+  "exclude": ["node_modules/**/*"]
 }

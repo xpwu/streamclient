@@ -19,3 +19,6 @@ ios/stream.xcworkspace/xcuserdata/xpwu.xcuserdatad/UserInterfaceState.xcuserstat
 ios/stream.xcworkspace/contents.xcworkspacedata
 ios/stream.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 ios/stream.xcworkspace/xcuserdata/xpwu.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+web/.idea/jsLibraryMappings.xml
+web/dist
+web/test/node_modules

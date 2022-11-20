@@ -53,7 +53,7 @@ client.recover(func ) 恢复被断开的网络，可多次调用
 Client client = new Client("wss://xxxxxx");
 ```
 2、client.Send(xxx) 即可像短连接一样发送请求，同一个client上的所有
-请求都是在一条连接中发送。    
+请求都是在一条连接中发送。如果返回错误err，可以通过 if (err instanceof ConnError) 判断是否是连接错误。  
 
 ### push  
 client.setPushCallback(xxx) 即可设定push的接收函数     

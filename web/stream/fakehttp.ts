@@ -42,7 +42,7 @@ export class Request {
 
     let headerArr = new Array<{key:Utf8, value:Utf8}>();
 
-    header.forEach((value: string, key: string, map: Map<string, string>)=>{
+    header.forEach((value: string, key: string, _: Map<string, string>)=>{
       let utf8 = {key: new Utf8(key), value: new Utf8(value)};
       headerArr.push(utf8);
       len += 1 + utf8.key.byteLength + 1 + utf8.value.byteLength;
@@ -112,6 +112,7 @@ export class Response {
       return ""
     }
 
+    // return this.buffer.slice(offset).toString()
     let utf8 = new Utf8(this.buffer.slice(offset));
     return utf8.toString();
   }
@@ -137,7 +138,7 @@ export class Response {
   public static fromError(reqId:number, err: Error):Response {
     let utf8 = new Utf8(err.message);
     let buffer = new Uint8Array(4+1 + utf8.byteLength);
-    (new DataView(buffer)).setUint32(0, reqId);
+    (new DataView(buffer.buffer)).setUint32(0, reqId);
     buffer[4] = 1;
     buffer.set(utf8.utf8, 5);
 

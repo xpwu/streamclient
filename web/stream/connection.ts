@@ -1,11 +1,10 @@
-import {DomWebSocket} from "./websocket"
 
 export interface Event {
 
 }
 
 export interface MessageEvent extends Event{
-  readonly data: string | ArrayBuffer
+  readonly data: ArrayBuffer
 }
 
 export interface CloseEvent extends Event{
@@ -27,6 +26,9 @@ export interface WebSocketInterface {
   send(data: ArrayBuffer): void;
 }
 
+export interface WebSocketConstructor {
+  new (url: string): WebSocketInterface
+}
 
 export class Connection {
 
@@ -44,8 +46,8 @@ export class Connection {
 
   private websocket: WebSocketInterface;
 
-  constructor(url: string) {
-    this.websocket = new DomWebSocket(url)
+  constructor(url: string, websocketConstructor: WebSocketConstructor) {
+    this.websocket = new websocketConstructor(url)
 
     this.websocket.onclose = (ev: CloseEvent)=>{
       this.onclose(ev)
@@ -74,7 +76,7 @@ export class Connection {
       // 握手结束才是真正的onopen
       this.onopen({})
     }
-    this.websocket.onopen = (ev: Event)=>{
+    this.websocket.onopen = (_: Event)=>{
       // nothing to do
     }
   }
@@ -88,8 +90,7 @@ export class Connection {
     connect id: 8 bytes, net order
 */
   private readHandshake(result: MessageEvent): Error | null {
-    // 一定是 ArrayBuffer
-    let buffer = <ArrayBuffer>result.data
+    let buffer = result.data
     if (buffer.byteLength != 16) {
       return new Error("len(handshake) != 16")
     }
