@@ -99,16 +99,12 @@ export class Client {
     let reqId = this.reqId++;
     req.SetReqId(reqId);
 
-    err = await this.net.Write(req.ToData());
-    // 向网络写数据失败，也应该归为连接层的错误
-    if (err != null) {
-      return [emptyResult, new ConnError(err)];
-    }
-
-    // todo 响应需要放到请求前
-    return new Promise<[Result, Error | null]>(
+    let timer:number|undefined
+    let res = new Promise<[Result, Error | null]>(
       (resolve: (ret: [Result, Error | null ]) => void) => {
         this.allReq.set(reqId, (result)=>{
+          clearTimeout(timer)
+
           if (result.err !== null) {
             resolve([emptyResult, result.err]);
             return
@@ -123,11 +119,21 @@ export class Client {
           resolve([new Result(new Utf8(res.data())), null]);
         });
 
-        setTimeout(()=>{
+        timer = setTimeout(()=>{
           this.allReq.delete(reqId)
           resolve([emptyResult, new Error("timeout")]);
-        }, this.op.requestTimeout/Millisecond);
+        }, this.op.requestTimeout/Millisecond)as unknown as number;
       })
+
+    err = await this.net.Write(req.ToData());
+    // 向网络写数据失败，也应该归为连接层的错误
+    if (err != null) {
+      this.allReq.delete(reqId)
+      clearTimeout(timer)
+      return [emptyResult, new ConnError(err)];
+    }
+
+    return res
   }
 
   public async recover(): Promise<Error|null> {
