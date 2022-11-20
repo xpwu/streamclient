@@ -86,9 +86,9 @@ export async function send() {
       printError("resp-error: " + err.message)
     }
   } else {
-    print("resp: " + ret + "\n ---> json: see the 'console'")
+    print("resp: " + ret.toString() + "\n ---> json: see the 'console'")
     console.log("resp---json: ")
-    console.log(JSON.parse(ret))
+    console.log(JSON.parse(ret.toString()))
   }
 }
 

@@ -5,6 +5,22 @@ import {option, Option} from "./option"
 import {Millisecond} from "./duration"
 import {CloseEvent} from "./connection"
 import {ConnError} from "./connerror"
+import {Utf8} from "./utf8"
+
+export class Result {
+  public toString():string {
+    return this.utf8.toString()
+  }
+
+  public rawBuffer():Uint8Array {
+    return this.utf8.utf8
+  }
+
+  constructor(private utf8:Utf8) {
+  }
+}
+
+let emptyResult = new Result(new Utf8(""))
 
 export class Client {
   private readonly net: Net;
@@ -12,7 +28,7 @@ export class Client {
   private reqId: number;
   // private onPush: (res:string)=>Promise<void> = (res:string)=>{return Promise.resolve()};
   // private onPeerClosed: ()=>Promise<void> = ()=>{return Promise.resolve()};
-  private onPush: (res:string)=>void = ()=>{};
+  private onPush: (res:ArrayBuffer)=>void = ()=>{};
   private onPeerClosed: ()=>void = ()=>{};
   private op = new option
 
@@ -63,7 +79,7 @@ export class Client {
     this.allReq = new Map();
   }
 
-  public setPushCallback(clb :(res:string)=>void) {
+  public setPushCallback(clb :(res:ArrayBuffer)=>void) {
     this.onPush = clb;
   }
 
@@ -72,11 +88,11 @@ export class Client {
   }
 
   public async send(data: ArrayBuffer | string, header?: Map<string, string>)
-    : Promise<[string, Error | null]> {
+    : Promise<[Result, Error | null]> {
 
     let err = await this.net.Connect();
     if (err != null) {
-      return ["", new ConnError(err)];
+      return [emptyResult, new ConnError(err)];
     }
 
     let req = new Request(data, header);
@@ -86,30 +102,30 @@ export class Client {
     err = await this.net.Write(req.ToData());
     // 向网络写数据失败，也应该归为连接层的错误
     if (err != null) {
-      return ["", new ConnError(err)];
+      return [emptyResult, new ConnError(err)];
     }
 
     // todo 响应需要放到请求前
-    return new Promise<[string, Error | null]>(
-      (resolve: (ret: [string, Error | null ]) => void) => {
+    return new Promise<[Result, Error | null]>(
+      (resolve: (ret: [Result, Error | null ]) => void) => {
         this.allReq.set(reqId, (result)=>{
           if (result.err !== null) {
-            resolve(["", result.err]);
+            resolve([emptyResult, result.err]);
             return
           }
 
           let res = result.res
           if (res.status !== Status.Ok) {
-            resolve(["", new Error(res.data())]);
+            resolve([emptyResult, new Error(new Utf8(res.data()).toString())]);
             return
           }
 
-          resolve([res.data(), null]);
+          resolve([new Result(new Utf8(res.data())), null]);
         });
 
         setTimeout(()=>{
           this.allReq.delete(reqId)
-          resolve(["", new Error("timeout")]);
+          resolve([emptyResult, new Error("timeout")]);
         }, this.op.requestTimeout/Millisecond);
       })
   }

@@ -1,6 +1,6 @@
 
 
-export {Client} from './client'
+export {Client, Result} from './client'
 
 export {ConnError} from './connerror'
 

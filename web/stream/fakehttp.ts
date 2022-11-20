@@ -100,7 +100,7 @@ export class Response {
     return (new DataView(this.buffer.buffer)).getUint32(0);
   }
 
-  public data():string {
+  public data():ArrayBuffer {
 
     let offset = 5
     if (this.isPush()) {
@@ -109,12 +109,12 @@ export class Response {
     }
 
     if (this.buffer.byteLength <= offset) {
-      return ""
+      return new ArrayBuffer(0)
     }
 
-    // return this.buffer.slice(offset).toString()
-    let utf8 = new Utf8(this.buffer.slice(offset));
-    return utf8.toString();
+    return this.buffer.slice(offset).buffer
+    // let utf8 = new Utf8(this.buffer.slice(offset));
+    // return utf8.toString();
   }
 
   public isPush():boolean {
