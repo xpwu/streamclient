@@ -67,6 +67,9 @@ client.recover(func ) 恢复被断开的网络，可多次调用
 ### 使用  
 直接把stream目录中所有内容放入工程中。tsconfig.json 使用实际项目中的相应文件
   
+### test   
+test/dist/index.html 可以直接在本地浏览器打开运行测试  
+  
   
 ## wxapp
 ### request
