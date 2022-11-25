@@ -130,7 +130,7 @@ export class Response {
     let view = new DataView(ret)
     view.setUint32(0, 1)
     view.setUint8(4, 0)
-    view.setUint32(5, (new DataView(this.buffer)).getUint32(5))
+    view.setUint32(5, (new DataView(this.buffer.buffer)).getUint32(5))
 
     return ret
   }

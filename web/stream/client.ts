@@ -28,7 +28,7 @@ export class Client {
   private reqId: number;
   // private onPush: (res:string)=>Promise<void> = (res:string)=>{return Promise.resolve()};
   // private onPeerClosed: ()=>Promise<void> = ()=>{return Promise.resolve()};
-  private onPush: (res:ArrayBuffer)=>void = ()=>{};
+  private onPush: (res:Result)=>void = ()=>{};
   private onPeerClosed: ()=>void = ()=>{};
   private op = new option
 
@@ -50,7 +50,7 @@ export class Client {
           this.net.WriteForce(res.newPushAck())
           // 异步执行
           setTimeout(()=>{
-            this.onPush(res.data())
+            this.onPush(new Result(new Utf8(res.data())))
           }, 0)
 
           return;
@@ -79,7 +79,7 @@ export class Client {
     this.allReq = new Map();
   }
 
-  public setPushCallback(clb :(res:ArrayBuffer)=>void) {
+  public setPushCallback(clb :(res:Result)=>void) {
     this.onPush = clb;
   }
 

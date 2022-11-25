@@ -63,7 +63,7 @@ export async function send() {
     url = wss as string
     client = new Client(url)
     client.setPushCallback((data)=>{
-      printPush("push: " + data)
+      printPush("push: " + data.toString())
     })
     client.setPeerClosedCallback(()=>{
       printError("conn: closed by peer")
