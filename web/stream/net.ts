@@ -36,6 +36,10 @@ export class Net {
     this.conn = null;
   }
 
+  public updateWss(wss: string) {
+    this.wss = wss
+  }
+
   // 采用最多只有一条连接处于活跃状态的策略（包括：connecting/connect/closing)，连接的判读可以单一化，对上层暴露的调用可以简单化。
   // 但对一些极限操作可能具有滞后性，比如正处于closing的时候(代码异步执行中)，新的Connect调用不能立即连接。为了尽可能的避免这种情况，
   // 在onerror 及 onclose 中都使用了同步代码。

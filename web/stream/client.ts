@@ -79,6 +79,13 @@ export class Client {
     this.allReq = new Map();
   }
 
+  public updateWss(wss: string) {
+    if (wss.indexOf("s://") === -1) {
+      wss = "ws://" + wss;
+    }
+    this.net.updateWss(wss)
+  }
+
   public setPushCallback(clb :(res:Result)=>void) {
     this.onPush = clb;
   }
