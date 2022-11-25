@@ -64,6 +64,10 @@ client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数
 ### recover connection
 client.recover(func ) 恢复被断开的网络，可多次调用   
 
+### updateWss   
+client.updateWss(wss) 更新链接的地址，下一次自动重连时，会使用新的链接
+
+
 ### 使用  
 直接把stream目录中所有内容放入工程中。tsconfig.json 使用实际项目中的相应文件
   
