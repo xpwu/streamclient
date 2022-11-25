@@ -58,17 +58,17 @@ export class Request {
     for (let h of headerArr) {
       (new DataView(this.buffer)).setUint8(pos, h.key.byteLength);
       pos++;
-      (new Uint8Array(this.buffer)).set(h.key.utf8, pos);
+      (new Uint8Array(this.buffer)).set(h.key.raw, pos);
       pos += h.key.byteLength;
       (new DataView(this.buffer)).setUint8(pos, h.value.byteLength);
       pos++;
-      (new Uint8Array(this.buffer)).set(h.value.utf8, pos);
+      (new Uint8Array(this.buffer)).set(h.value.raw, pos);
       pos += h.value.byteLength;
     }
     (new DataView(this.buffer)).setUint8(pos, 0);
     pos++;
 
-    (new Uint8Array(this.buffer)).set(body.utf8, pos);
+    (new Uint8Array(this.buffer)).set(body.raw, pos);
   }
 
   public SetReqId(id:number) {
@@ -140,7 +140,7 @@ export class Response {
     let buffer = new Uint8Array(4+1 + utf8.byteLength);
     (new DataView(buffer.buffer)).setUint32(0, reqId);
     buffer[4] = 1;
-    buffer.set(utf8.utf8, 5);
+    buffer.set(utf8.raw, 5);
 
     return new Response(buffer);
   }

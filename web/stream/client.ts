@@ -13,7 +13,7 @@ export class Result {
   }
 
   public rawBuffer():Uint8Array {
-    return this.utf8.utf8
+    return this.utf8.raw
   }
 
   constructor(private utf8:Utf8) {

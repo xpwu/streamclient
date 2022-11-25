@@ -1,6 +1,6 @@
 
 export class Utf8 {
-  public readonly utf8: Uint8Array;
+  public readonly raw: Uint8Array;
   private readonly indexes: Array<number>;
   private str:string|null;
   public readonly byteLength:number;
@@ -10,11 +10,11 @@ export class Utf8 {
     this.indexes = new Array<number>();
 
     if (typeof input !== "string") {
-      this.utf8 = new Uint8Array(input);
+      this.raw = new Uint8Array(input);
       let utf8i = 0;
-      while (utf8i < this.utf8.length) {
+      while (utf8i < this.raw.length) {
         this.indexes.push(utf8i);
-        utf8i += Utf8.getUTF8CharLength(Utf8.loadUTF8CharCode(this.utf8, utf8i));
+        utf8i += Utf8.getUTF8CharLength(Utf8.loadUTF8CharCode(this.raw, utf8i));
       }
       this.indexes.push(utf8i);  // end flag
 
@@ -27,18 +27,18 @@ export class Utf8 {
       for (let ch of input) {
         length += Utf8.getUTF8CharLength(ch.codePointAt(0)!)
       }
-      this.utf8 = new Uint8Array(length);
+      this.raw = new Uint8Array(length);
 
       let index = 0;
       for (let ch of input) {
         this.indexes.push(index);
-        index = Utf8.putUTF8CharCode(this.utf8, ch.codePointAt(0)!, index)
+        index = Utf8.putUTF8CharCode(this.raw, ch.codePointAt(0)!, index)
       }
       this.indexes.push(index); // end flag
     }
 
     this.length = this.indexes.length - 1;
-    this.byteLength = this.utf8.byteLength;
+    this.byteLength = this.raw.byteLength;
 
   }
 
@@ -153,8 +153,8 @@ export class Utf8 {
     }
 
     let codes = new Array<number>();
-    for (let utf8i = 0; utf8i < this.utf8.length;) {
-      let code = Utf8.loadUTF8CharCode(this.utf8, utf8i);
+    for (let utf8i = 0; utf8i < this.raw.length;) {
+      let code = Utf8.loadUTF8CharCode(this.raw, utf8i);
       codes.push(code);
       utf8i += Utf8.getUTF8CharLength(code);
     }
@@ -165,7 +165,7 @@ export class Utf8 {
   }
 
   public codePointAt(index: number):ArrayBuffer {
-    return this.utf8.slice(this.indexes[index], this.indexes[index+1]);
+    return this.raw.slice(this.indexes[index], this.indexes[index+1]);
   }
 
 }
