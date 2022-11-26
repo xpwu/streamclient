@@ -102,7 +102,7 @@ extension ClientImpl {
       return
     }
     
-		asyncRunWaiting(StmError.ElseError("connection closed by self"))
+		asyncRunWaiting(StmError.Conn("connection closed by self"))
     
     connState = ConnectState.Closing
     net.close()
@@ -220,18 +220,21 @@ extension ClientImpl {
         return
       }
 
-      print("stream.ClientImpl on Error \(error)")
+      print("stream.ClientImpl on Error: \(error)")
       
       // 不管什么错误，都需要清除等待中的连接
       asyncRunWaiting(error)
+			
+			// 不确定onError的时候是否已经自动会执行onClosed，这里再次明确执行一次，
+			// 但是要注意onClosed的逻辑多次执行也要没有问题
+			onClose(error.localizedDescription)
       
       // 发生了错误，就要执行一次关闭的操作
-      connState = ConnectState.Closing
+			// 前面的其他操作可能 更改了connState，这里做二次确认
+			if (connState == ConnectState.Connecting || connState == ConnectState.Connected) {
+				connState = ConnectState.Closing
+			}
       self.net.close()
-      
-      // 不确定onError的时候是否已经自动会执行onClosed，这里再次明确执行一次，
-      // 但是要注意onClosed的逻辑多次执行也要没有问题
-      onClose(error.localizedDescription)
     }
   }
 }
