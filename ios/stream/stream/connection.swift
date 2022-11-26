@@ -101,7 +101,7 @@ extension Connection {
     inputTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(connectTimeout.second()), repeats: false, block: {
       [unowned self] (_:Timer) in
       self.onConnected = {()->Void in}
-      self.onError(StrError("connect time out"))
+			self.onError(StmError.ElseError("connect time out"))
     })
     
     Stream.getStreamsToHost(withName: host, port: port
@@ -112,7 +112,7 @@ extension Connection {
       // 不能使用以下异步的方式通过onError接口传递错误，因为可能调用方调用close()后提前释放了Connection 实例
       // unowned 捕获就是异常，所以只能同步返回
       // async {[unowned self] in self.onError(StrError("connect --- get stream error"))}
-      return StrError("connect --- get stream error")
+      return StmError.ElseError("connect --- get stream error")
     }
     
     inputStream?.delegate = self
@@ -164,7 +164,7 @@ extension Connection {
 extension Connection {
   func send(_ data:[Byte])->Error? {
     if data.count > maxBytes {
-      return StrError(String(format: "data is too large, must be less than %d Bytes", maxBytes))
+      return StmError.ElseError(String(format: "data is too large, must be less than %d Bytes", maxBytes))
     }
     
     waitForSending.append(data)
@@ -243,7 +243,7 @@ extension Connection {
         return
       }
       if n <= 0 {
-        onError(outputStream?.streamError ?? StrError("write handshake error!"))
+        onError(outputStream?.streamError ?? StmError.ElseError("write handshake error!"))
         return
       }
       
@@ -267,7 +267,7 @@ extension Connection {
         return
       }
       if (n <= 0) {
-        onError(inputStream?.streamError ?? StrError("read handshake error!"))
+        onError(inputStream?.streamError ?? StmError.ElseError("read handshake error!"))
         return
       }
       pos += n
@@ -319,7 +319,7 @@ extension Connection {
   
   func trySend() {
     guard let outputStream = self.outputStream else {
-      onError(StrError("not connected"))
+      onError(StmError.ElseError("not connected"))
       return
     }
     
@@ -339,7 +339,7 @@ extension Connection {
     let n = outputStream.write(sendBuffer, maxLength: sendBuffer.count)
     // 已经判断有空间了，再出现0，说明有错误
     if (n <= 0) {
-      onError(outputStream.streamError ?? StrError("outputStream write error!"))
+      onError(outputStream.streamError ?? StmError.ElseError("outputStream write error!"))
       return
     }
     
@@ -364,7 +364,7 @@ extension Connection {
       withTimeInterval: TimeInterval(2*hearBeatTime.second())
       , repeats: false
       , block: {[unowned self] (_:Timer) in
-        self.onError(StrError("heartbeat timeout"))
+        self.onError(StmError.ElseError("heartbeat timeout"))
     })
   }
   
@@ -374,7 +374,7 @@ extension Connection {
       withTimeInterval: TimeInterval(frameTimeout.second())
       , repeats: false
       , block: {[unowned self] (_:Timer) in
-        self.onError(StrError("read frame timeout"))
+        self.onError(StmError.ElseError("read frame timeout"))
     })
   }
   
@@ -385,7 +385,7 @@ extension Connection {
     
     return {[unowned self]()->Void in
       guard let inputStream = self.inputStream else {
-        onError(StrError("not connected"))
+        onError(StmError.ElseError("not connected"))
         return
       }
       
@@ -393,7 +393,7 @@ extension Connection {
       
       let n = inputStream.read(&length[pos], maxLength: 4-pos)
       if n <= 0 {
-        onError(inputStream.streamError ?? StrError("stream read error!"))
+        onError(inputStream.streamError ?? StmError.ElseError("stream read error!"))
         return
       }
 
@@ -423,7 +423,7 @@ extension Connection {
     
     return {[unowned self]()->Void in
       guard let inputStream = inputStream else {
-        onError(StrError("not connected"))
+        onError(StmError.ElseError("not connected"))
         return
       }
       
@@ -431,7 +431,7 @@ extension Connection {
       
       let n = inputStream.read(&content[pos], maxLength: content.count-pos)
       if n <= 0 {
-        onError(inputStream.streamError ?? StrError("stream read error!"))
+        onError(inputStream.streamError ?? StmError.ElseError("stream read error!"))
         return
       }
       
@@ -457,7 +457,7 @@ extension Connection: StreamDelegate {
       onClose("connection closed")
 
     case Stream.Event.errorOccurred:
-      onError(aStream.streamError ?? StrError("stream error!"))
+      onError(aStream.streamError ?? StmError.ElseError("stream error!"))
 
     case Stream.Event.hasBytesAvailable:
 
