@@ -268,13 +268,16 @@ class ClientImpl {
         // 不管什么错误，都需要清除等待中的连接
         runWaiting(error);
 
-        // 发生了错误，就要执行一次关闭的操作
-        connState = ConnectState.Closing;
-        net.close();
-
         // 不确定onError的时候是否已经自动会执行onClosed，这里再次明确执行一次，
         // 但是要注意onClosed的逻辑多次执行也要没有问题
         this.onClosed(error.getMessage());
+
+        // 发生了错误，就要执行一次关闭的操作
+        // 前面的其他操作可能 更改了connState，这里做二次确认
+        if (connState == ConnectState.Connecting || connState == ConnectState.Connected) {
+          connState = ConnectState.Closing;
+        }
+        net.close();
       }
     });
   }
