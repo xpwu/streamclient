@@ -42,6 +42,9 @@ client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数
 ### recover connection
 client.recover(func ) 恢复被断开的网络，可多次调用   
 
+### updateOptions   
+client.updateOptions(...) 更新配置，下一次自动重连时，会使用新的配置
+
 ### 使用  
 新建一个module, 直接把app/src/main/java目录中 com.anywithyou.stream 包的所有内容放入工程中    
   
