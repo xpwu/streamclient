@@ -22,6 +22,7 @@
 		A41DA8252615A8260015F259 /* binary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A41DA8242615A8250015F259 /* binary.swift */; };
 		A41DA82F2615BD8E0015F259 /* funcTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A41DA82E2615BD8E0015F259 /* funcTests.swift */; };
 		A41DA8332615D7C00015F259 /* connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A41DA8322615D7C00015F259 /* connection.swift */; };
+		A4393CE5293208BB006EBEBD /* config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4393CE4293208BB006EBEBD /* config.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		A41DA8242615A8250015F259 /* binary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = binary.swift; sourceTree = "<group>"; };
 		A41DA82E2615BD8E0015F259 /* funcTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = funcTests.swift; sourceTree = "<group>"; };
 		A41DA8322615D7C00015F259 /* connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = connection.swift; sourceTree = "<group>"; };
+		A4393CE4293208BB006EBEBD /* config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = config.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				A41DA73E260B5D000015F259 /* streamTests.swift */,
 				A41DA740260B5D000015F259 /* Info.plist */,
 				A41DA82E2615BD8E0015F259 /* funcTests.swift */,
+				A4393CE4293208BB006EBEBD /* config.swift */,
 			);
 			path = streamTests;
 			sourceTree = "<group>";
@@ -249,6 +252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4393CE5293208BB006EBEBD /* config.swift in Sources */,
 				A41DA73F260B5D000015F259 /* streamTests.swift in Sources */,
 				A41DA82F2615BD8E0015F259 /* funcTests.swift in Sources */,
 			);
