@@ -38,6 +38,13 @@ public extension Client {
   func recover(onSuccess:@escaping ()->Void, onFailed:@escaping (Error)->Void) {
     connect(onSuccess: onSuccess, onFailed: onFailed)
   }
+	
+	func updateOptions(_ options: Option...) {
+		for option in options {
+			option(&impl.config)
+		}
+		impl.updateNetConnectTime()
+	}
 }
 
 // 回调

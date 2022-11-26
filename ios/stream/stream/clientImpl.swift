@@ -154,6 +154,10 @@ extension ClientImpl {
 }
 
 extension ClientImpl {
+	func updateNetConnectTime() {
+		self.net.setConfig(connectTimeout: config.connectTimeout)
+	}
+	
   func setNet(_ net:Net) {
     self.net = net
     self.net.setConfig(connectTimeout: config.connectTimeout)
