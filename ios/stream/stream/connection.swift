@@ -285,7 +285,7 @@ extension Connection {
       maxBytes = recBuffer[4..<8].net2UInt64()
       connectId = String(format: "%016llx", recBuffer[8...].net2UInt64())
       
-      print("connect id = " + connectId)
+      print("connect_id = " + connectId)
       
       read = readLength()
       write = writeData()

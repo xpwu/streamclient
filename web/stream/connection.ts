@@ -99,7 +99,7 @@ export class Connection {
 
     this.maxConcurrent = view.getUint8(3);
     this.maxBytes = view.getUint32(4);
-    this.connectID = "0x" + ("00000000" + view.getUint32(8).toString(16)).slice(-8) +
+    this.connectID = ("00000000" + view.getUint32(8).toString(16)).slice(-8) +
       ("00000000" + view.getUint32(12).toString(16)).slice(-8);
     console.log("connectID = ", this.connectID)
 
