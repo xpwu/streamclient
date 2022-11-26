@@ -392,10 +392,13 @@ extension Connection {
       inputTimer?.invalidate()
       
       let n = inputStream.read(&length[pos], maxLength: 4-pos)
-      if n <= 0 {
-        onError(inputStream.streamError ?? StmError.ElseError("stream read error!"))
+      if n < 0 {
+        onError(inputStream.streamError ?? StmError.Conn("stream read error!"))
         return
-      }
+			} else if n == 0 {
+				onClose("stream closed by peer")
+				return
+			}
 
       pos += n
       if pos < 4 {
@@ -430,10 +433,13 @@ extension Connection {
       inputTimer?.invalidate()
       
       let n = inputStream.read(&content[pos], maxLength: content.count-pos)
-      if n <= 0 {
-        onError(inputStream.streamError ?? StmError.ElseError("stream read error!"))
+      if n < 0 {
+        onError(inputStream.streamError ?? StmError.Conn("stream read error!"))
         return
-      }
+      }else if n == 0 {
+				onClose("stream closed by peer")
+				return
+			}
       
       pos += n
       if pos < content.count {
@@ -457,7 +463,7 @@ extension Connection: StreamDelegate {
       onClose("connection closed")
 
     case Stream.Event.errorOccurred:
-      onError(aStream.streamError ?? StmError.ElseError("stream error!"))
+      onError(aStream.streamError ?? StmError.Conn("stream error!"))
 
     case Stream.Event.hasBytesAvailable:
 
