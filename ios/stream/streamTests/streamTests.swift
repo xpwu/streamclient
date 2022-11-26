@@ -8,6 +8,7 @@
 import XCTest
 @testable import stream
 
+
 class streamTests: XCTestCase {
   
   var client:Client?
@@ -17,7 +18,7 @@ class streamTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-      client = Client(Host("192.168.1.106"), Port(8888), ConnectTimeout(15*Duration.Second))
+			client = Client(Host(conf.host), Port(conf.port), ConnectTimeout(15*Duration.Second))
       client?.onPeerClosed {
         print("closed by peer!")
       }
@@ -132,10 +133,10 @@ class streamTests: XCTestCase {
       XCTFail()
     }, onFailed: { [unowned self] (e:Error) in
       print("\(e)")
-      XCTAssertTrue(true)
       done()
     })
     add()
+		// 及时关闭，应该从onFailed返回才是正确的
     client?.close()
     done()
     wait()
@@ -160,20 +161,16 @@ class streamTests: XCTestCase {
   struct Request:Codable {
     var Numbers:[Int]
   }
-  struct Response:Codable {
-    var Sum:Int
-  }
   
   func testConnectAndSend() {
     add()
     let request = Request(Numbers: [20, 50, 60])
     let data = try! JSONEncoder().encode(request)
     
-    client?.Send(data: [Byte](data), headers: ["api":"/Sum"], onSuccess: {
+		client?.Send(data: [Byte](data), headers: conf.headers, onSuccess: {
       [unowned self](data: [Byte]) in
-      let res = try! JSONDecoder().decode(Response.self, from: Data(data))
-      print(res)
-      XCTAssertEqual(res.Sum, 20+50+60)
+      print(String(bytes: data, encoding: String.Encoding.utf8)
+						?? "response is ok, but this data is not utf8 ")
       done()
     }, onFailed: {[unowned self] (err: Error) in
       print(err)
@@ -182,21 +179,6 @@ class streamTests: XCTestCase {
     })
     
     wait()
-  }
-  
-  func testHeartbeart() {
-    add()
-    client?.connect(onSuccess: {
-      
-    }, onFailed: {[unowned self] (_: Error) in
-      done()
-    })
-    Timer.scheduledTimer(withTimeInterval: TimeInterval(15*60), repeats: false) {
-      [unowned self] (_:Timer) in
-      done()
-    }
-    
-    wait(time: 20*Duration.Minute)
   }
   
   func testBitwise() {
