@@ -102,7 +102,7 @@ extension ClientImpl {
       return
     }
     
-    asyncRunWaiting(StrError("connection closed by self"))
+		asyncRunWaiting(StmError.ElseError("connection closed by self"))
     
     connState = ConnectState.Closing
     net.close()
@@ -113,14 +113,14 @@ extension ClientImpl {
                      , _ onSuccess:@escaping (([Byte])->Void)
                      , _ onFailed:@escaping ((Error)->Void)) {
     if (connState != ConnectState.Connected) {
-      async{onFailed(StrError("not connected"))}
+			async{onFailed(StmError.Conn("not connected"))}
       return
     }
     
     let reqId = self.reqId()
   
     guard var request = FakeHttp.Request(body:data, headers: headers) else {
-      async {onFailed(StrError("build request error, maybe header is error"))}
+      async {onFailed(StmError.Conn("build request error, maybe header is error"))}
       return
     }
     
@@ -128,14 +128,14 @@ extension ClientImpl {
       withTimeInterval: TimeInterval(config.requestTimeout.second())
       , repeats: false) {[weak self] (_:Timer) in
       self?.allRequests.removeValue(forKey: reqId)
-      onFailed(StrError("request timeout"))
+      onFailed(StmError.ElseError("request timeout"))
     }
     
     allRequests[reqId] = {(response:FakeHttp.Response)->Void in
       timer.invalidate()
       
       if (response.status != FakeHttp.Response.Status.OK) {
-        async {onFailed(StrError(String(bytes: response.data, encoding: String.Encoding.utf8)
+        async {onFailed(StmError.ElseError(String(bytes: response.data, encoding: String.Encoding.utf8)
                   ?? "response is failed, but this error message is not utf8 "))}
         return
       }
@@ -146,7 +146,7 @@ extension ClientImpl {
     request.setReqId(reqId: reqId)
     let err = request.sendTo(net: net)
     if err != nil {
-      async{onFailed(err!)}
+			async{onFailed(StmError.ConnError(err!))}
       timer.invalidate()
       allRequests.removeValue(forKey: reqId)
     }

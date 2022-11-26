@@ -7,14 +7,23 @@
 
 import Foundation
 
-struct StrError: Error, LocalizedError {
-  public init(_ str:String) {
-    self.str_ = str;
-  }
-  
-  public var errorDescription: String? {
-    return str_;
-  }
-  
-  private var str_:String
+public enum StmError: Error {
+	case ConnError(Error)
+	case ElseError(String)
+	
+	static func Conn(_ str: String)-> StmError {
+		return StmError.ConnError(StmError.ElseError(str))
+	}
 }
+
+extension StmError: LocalizedError {
+	public var errorDescription: String? {
+		switch self {
+		case .ConnError(let error):
+			return "ConnError: " + error.localizedDescription
+		case .ElseError(let string):
+			return "Error: " + string
+		}
+	}
+}
+

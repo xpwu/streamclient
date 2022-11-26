@@ -30,7 +30,8 @@ public extension Client {
     connect {[unowned self] in
       self.onlySend(data: data, headers: headers, onSuccess: onSuccess, onFailed: onFailed)
     } onFailed: { (error:Error) in
-      onFailed(error)
+			// 转为连接层错误
+			onFailed(StmError.ConnError(error))
     }
   }
   
