@@ -74,7 +74,7 @@ public class Client {
 
 
   public interface ErrorHandler {
-    void onFailed(Error error);
+    void onFailed(Error error, boolean isConn);
   }
   public interface ResponseHandler extends ErrorHandler{
     void onSuccess(byte[] response);
@@ -88,8 +88,8 @@ public class Client {
       }
 
       @Override
-      public void onFailed(Error error) {
-        handler.onFailed(error);
+      public void onFailed(Error error, boolean isConn) {
+        handler.onFailed(error, isConn);
       }
     });
   }

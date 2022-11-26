@@ -13,11 +13,11 @@ import java.util.TimerTask;
 
 class ClientImpl {
 
-  private void asyncErr(Client.ErrorHandler handler, Error error) {
+  private void asyncErr(Client.ErrorHandler handler, Error error, boolean isConn) {
     new Handler().post(new Runnable() {
       @Override
       public void run() {
-        handler.onFailed(error);
+        handler.onFailed(error, isConn);
       }
     });
   }
@@ -47,7 +47,7 @@ class ClientImpl {
       if (error == null) {
         asyncConnectSuc(handler);
       } else {
-        asyncErr(handler, error);
+        asyncErr(handler, error, true);
       }
     }
 
@@ -95,12 +95,12 @@ class ClientImpl {
       }
 
       @Override
-      public void onFailed(Error error) {
+      public void onFailed(Error error, boolean isConn) {
         if (!isAsync.value) {
-          asyncErr(handler, error);
+          asyncErr(handler, error, isConn);
           return;
         }
-        handler.onFailed(error);
+        handler.onFailed(error, isConn);
       }
     });
 
@@ -131,7 +131,7 @@ class ClientImpl {
   // 如果没有连接成功，直接返回失败
   public void send(byte[] data, Map<String, String> headers, Client.ResponseHandler handler) {
     if (connState != ConnectState.Connected) {
-      asyncErr(handler, new Error("not connected"));
+      asyncErr(handler, new Error("not connected"), true);
       return;
     }
 
@@ -146,7 +146,7 @@ class ClientImpl {
           @Override
           public void run() {
             allRequests.remove(reqId);
-            handler.onFailed(new Error("request timeout"));
+            handler.onFailed(new Error("request timeout"), false);
           }
         });
       }
@@ -163,10 +163,10 @@ class ClientImpl {
 
         if (response.status != FakeHttp.Response.Status.Ok) {
           if (!isAsync.value) {
-            asyncErr(handler, new Error(new String(response.data)));
+            asyncErr(handler, new Error(new String(response.data)), false);
             return;
           }
-          handler.onFailed(new Error(new String(response.data)));
+          handler.onFailed(new Error(new String(response.data)), false);
           return;
         }
 
@@ -186,7 +186,7 @@ class ClientImpl {
     } catch (Exception e) {
       allRequests.remove(reqId);
       timerTask.cancel();
-      asyncErr(handler, new Error(e));
+      asyncErr(handler, new Error(e), true);
     }
   }
 
