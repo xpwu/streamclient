@@ -57,7 +57,7 @@ extension LenContent {
   }
   
   func sendForce(_ data:[Byte]) {
-    return connection?.sendForce(data)
+		connection?.sendForce(data)
   }
   
   func receivedOneResponse() {

@@ -117,20 +117,22 @@ struct FakeHttp{
       if (!isPush() || pushID.count != 4) {
         return []
       }
-      var data = [Byte](repeating: 0, count: 4)
-      data[0] = Byte((reqId & 0xff000000) >> 24)
-      data[1] = Byte((reqId & 0xff0000) >> 16)
-      data[2] = Byte((reqId & 0xff00) >> 8)
-      data[3] = Byte(reqId & 0xff)
-      data.append(0) // end-of-headers
+      var ret = [Byte](repeating: 0, count: 4)
+			ret[0] = Byte((reqId & 0xff000000) >> 24)
+			ret[1] = Byte((reqId & 0xff0000) >> 16)
+			ret[2] = Byte((reqId & 0xff00) >> 8)
+			ret[3] = Byte(reqId & 0xff)
+			ret.append(0) // end-of-headers
       
-      data.append(contentsOf: pushID)
+			ret.append(contentsOf: pushID)
+			
+			return ret
     }
     
     let status:Status
     var reqId:UInt32
     let data:[Byte]
-    var pushID:[Byte]
+    var pushID:[Byte] = []
     
     private init(reqId:UInt32, status:Status, data:[Byte]) {
       self.reqId = reqId
