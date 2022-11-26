@@ -42,10 +42,17 @@ class funcTests: XCTestCase {
   
   func test2Host() throws {
     let n1:[Byte] = [0, 1, 2, 3, 4, 5, 6, 10]
+		
+		XCTAssertEqual(0x000102030405060a, n1.net2UInt64())
     print(String(format: "%016llx", n1.net2UInt64()))
+		
+		XCTAssertEqual(0x00010203, n1.net2UInt32())
     print(String(format: "%08llx", n1.net2UInt32()))
+		
+		XCTAssertEqual(0x0001, n1.net2UInt16())
     print(String(format: "%04llx", n1.net2UInt16()))
     
+		XCTAssertEqual(0x00000102, n1[1..<3].net2UInt32())
     print(String(format: "%08llx", n1[1..<3].net2UInt32()))
   }
 
