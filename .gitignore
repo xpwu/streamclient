@@ -22,3 +22,4 @@ ios/stream.xcworkspace/xcuserdata/xpwu.xcuserdatad/xcdebugger/Breakpoints_v2.xcb
 web/.idea/jsLibraryMappings.xml
 web/dist
 web/test/node_modules
+ios/stream/streamTests/config.swift
