@@ -102,7 +102,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
           Log.e("testClientConnect", "onFailed", error);
           done();
         }
@@ -122,7 +122,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
           Log.e("testClientConnect", "onFailed---1", error);
           done();
         }
@@ -137,7 +137,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
           Log.e("testClientConnect", "onFailed---2", error);
           done();
         }
@@ -152,7 +152,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
           Log.e("testClientConnect", "onFailed---3", error);
           done();
         }
@@ -178,7 +178,7 @@ public class ClientTest {
             }
 
             @Override
-            public void onFailed(Error error) {
+            public void onFailed(Error error, boolean isConn) {
               Log.e("testClientConnect", "onFailed---2", error);
               done();
             }
@@ -186,7 +186,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
           Log.e("testClientConnect", "onFailed---1", error);
           done();
         }
@@ -201,7 +201,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
           Log.e("testClientConnect", "onFailed---3", error);
           done();
         }
@@ -223,7 +223,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
           Log.e("testClientConnectClose", "onFailed", error);
           done();
         }
@@ -255,7 +255,7 @@ public class ClientTest {
         }
 
         @Override
-        public void onFailed(Error error) {
+        public void onFailed(Error error, boolean isConn) {
 //          Log.e("testSend", "onFailed: ", error);
           assertTrue(true);
           done();
@@ -299,7 +299,7 @@ public class ClientTest {
           }
 
           @Override
-          public void onFailed(Error error) {
+          public void onFailed(Error error, boolean isConn) {
             Log.e("testConnectAndSend", "onFailed---1: ", error);
             done();
           }
@@ -325,7 +325,7 @@ public class ClientTest {
           }
 
           @Override
-          public void onFailed(Error error) {
+          public void onFailed(Error error, boolean isConn) {
             Log.e("testConnectAndSend", "onFailed---2: ", error);
             done();
           }
@@ -364,7 +364,7 @@ public class ClientTest {
           }
 
           @Override
-          public void onFailed(Error error) {
+          public void onFailed(Error error, boolean isConn) {
             Log.e("testPush", "onFailed: ", error);
             done();
           }
