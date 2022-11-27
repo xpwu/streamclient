@@ -57,6 +57,15 @@ public class Option {
     });
   }
 
+  static public Option RequestTimeout(Duration duration) {
+    return new Option(new Setter() {
+      @Override
+      public void configValue(Value value) {
+        value.requestTimeout = duration;
+      }
+    });
+  }
+
   // 由握手协议，在服务器中读取
   @Deprecated
   static public Option HeartbeatTime(Duration duration) {

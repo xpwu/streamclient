@@ -34,6 +34,13 @@ public class Client {
     impl.setNet(new LenContent());
   }
 
+  public void updateOptions(Option ...options) {
+    for (Option op : options) {
+      op.configValue(this.impl.config);
+    }
+    this.impl.updateNetConnectTime();
+  }
+
 
   public interface PushCallback {
     void onPush(byte[] data);

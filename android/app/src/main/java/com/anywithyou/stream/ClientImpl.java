@@ -190,6 +190,10 @@ class ClientImpl {
     }
   }
 
+  public void updateNetConnectTime() {
+    this.net.setConfig(new Net.Config(config.connectTimeout, config.heartbeatTime, config.frameTimeout));
+  }
+
   public void setNet(Net net) {
     this.net = net;
     this.net.setConfig(new Net.Config(config.connectTimeout, config.heartbeatTime, config.frameTimeout));
