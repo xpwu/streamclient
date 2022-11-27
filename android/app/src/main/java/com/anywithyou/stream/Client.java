@@ -74,7 +74,7 @@ public class Client {
 
 
   public interface ErrorHandler {
-    void onFailed(Error error, boolean isConn);
+    void onFailed(Error error, boolean isConnError);
   }
   public interface ResponseHandler extends ErrorHandler{
     void onSuccess(byte[] response);
