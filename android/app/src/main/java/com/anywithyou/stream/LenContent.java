@@ -484,7 +484,7 @@ class LenContent implements Net {
                 config.MaxConcurrent = handshakeRes.MaxConcurrent;
                 connectID = handshakeRes.ConnectId;
 
-                Log.i("lencontent", "connect: id = " + connectID);
+                Log.i("lencontent", "connect_id = " + connectID);
 
                 onConnected.run(finalSocket);
               }
