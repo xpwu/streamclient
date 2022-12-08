@@ -1,12 +1,14 @@
 # streamclient
-go-stream 对应的客户端sdk，包括ios android web wxapp。    
-  
-  
+go-stream 对应的客户端sdk，包括ios android web wxapp。
+其中web的代码仓库在[这儿](https://github.com/xpwu/ts-streamclient-browser)，
+wxapp的代码仓库在[这儿](https://github.com/xpwu/ts-streamclient-wxapp)，
+本文档仅是使用说明
+
 ## ios  
 ### request
 1、创建 client。    
 ```
-client = Client(Host("xxx.xxx.xxx.xxx"), Port(8888), ConnectTimeout(15*Duration.Second))
+client = Client(Host("xxx.xxx.xxx.xxx"), Port(8888))
 ```
 2、client.Send(xxx) 即可像短连接一样发送请求，同一个client上的所有
 请求都是在一条连接中发送。   
@@ -49,11 +51,15 @@ client.updateOptions(...) 更新配置，下一次自动重连时，会使用新
 新建一个module, 直接把app/src/main/java目录中 com.anywithyou.stream 包的所有内容放入工程中    
   
   
-## web
+## web 
+### [代码仓库](https://github.com/xpwu/ts-streamclient-browser)
 ### request
 1、创建client    
 ```
-Client client = new Client("wss://xxxxxx");
+import {Client} from "ts-streamclient-base"
+import {NewClient} from "ts-streamclient-browser"
+
+let client: Client = NewClient("ws://xxxxxx");
 ```
 2、client.Send(xxx) 即可像短连接一样发送请求，同一个client上的所有
 请求都是在一条连接中发送。如果返回错误err，可以通过 if (err instanceof ConnError) 判断是否是连接错误。  
@@ -72,17 +78,28 @@ client.updateWss(wss) 更新链接的地址，下一次自动重连时，会使�
 
 
 ### 使用  
-直接把stream目录中所有内容放入工程中。tsconfig.json 使用实际项目中的相应文件
+在package.json中添加
+
+```
+"dependencies": {
+    "ts-streamclient-base": "https://github.com/xpwu/ts-streamclient-base.git#v0.1.0",
+    "ts-streamclient-wxapp": "https://github.com/xpwu/ts-streamclient-browser.git#v0.1.0"
+}
+```
+
   
 ### test   
 test/dist/index.html 可以直接在本地浏览器打开运行测试  
   
   
-## wxapp
+## wxapp [代码仓库](https://github.com/xpwu/ts-streamclient-wxapp)
 ### request
 1、创建client    
 ```
-Client client = new Client("wss://xxxxxx");
+import {Client} from "ts-streamclient-base"
+import {NewClient} from "ts-streamclient-wxapp"
+
+let client: Client = NewClient("ws://xxxxxx");
 ```
 2、client.Send(xxx) 即可像短连接一样发送请求，同一个client上的所有
 请求都是在一条连接中发送。    
@@ -97,5 +114,12 @@ client.setPeerClosedCallback(xxx ) 即可设定网络closed的接收函数
 client.recover(func ) 恢复被断开的网络，可多次调用    
 
 ### 使用  
-直接把stream目录中所有内容放入工程中。miniprogram-api-typings 目录是微信提供的ts typings，
-使用实际项目中的typings即可，tsconfig.json 也使用实际项目中的相应文件。
+在package.json中添加
+
+```
+"dependencies": {
+    "ts-streamclient-base": "https://github.com/xpwu/ts-streamclient-base.git#v0.1.0",
+    "ts-streamclient-wxapp": "https://github.com/xpwu/ts-streamclient-wxapp.git#v0.1.0"
+}
+```
+
