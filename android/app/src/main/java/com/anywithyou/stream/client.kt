@@ -21,6 +21,7 @@ val StError.IsConnError
 
 
 typealias Response = ByteArray
+
 suspend fun ClientKt.Send(data: ByteArray, headers: Map<String, String>): Pair<Response, StError?> {
 	return suspendCoroutine {
 		client.Send(data, headers, object : Client.ResponseHandler {
@@ -40,11 +41,11 @@ fun ClientKt.UpdateOptions(vararg options: OptionKt) {
 	client.updateOptions(*options.toOptions())
 }
 
-fun ClientKt.OnPush(block: (ByteArray)->UInt) {
+fun ClientKt.OnPush(block: (ByteArray) -> UInt) {
 	client.setPushCallback { data -> block(data) }
 }
 
-fun ClientKt.OnPeerClosed(block: ()->UInt) {
+fun ClientKt.OnPeerClosed(block: () -> UInt) {
 	client.setPeerClosedCallback { block() }
 }
 
