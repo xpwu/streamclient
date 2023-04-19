@@ -23,3 +23,4 @@ web/.idea/jsLibraryMappings.xml
 web/dist
 web/test/node_modules
 ios/stream/streamTests/config.swift
+android/.idea
