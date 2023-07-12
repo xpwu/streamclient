@@ -41,7 +41,7 @@ fun ClientKt.UpdateOptions(vararg options: OptionKt) {
 	client.updateOptions(*options.toOptions())
 }
 
-fun ClientKt.OnPush(block: (ByteArray) -> UInt) {
+fun ClientKt.OnPush(block: (ByteArray) -> Unit) {
 	client.setPushCallback { data -> block(data) }
 }
 
