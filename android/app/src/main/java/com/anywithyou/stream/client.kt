@@ -1,10 +1,14 @@
 package com.anywithyou.stream
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class ClientKt(vararg options: OptionKt) {
 	internal var client: Client
+	internal val dispatcher = CurrentThreadDispatcher()
 
 	init {
 		client = Client(*options.toOptions())
@@ -23,17 +27,19 @@ val StError.IsConnError
 typealias Response = ByteArray
 
 suspend fun ClientKt.Send(data: ByteArray, headers: Map<String, String>): Pair<Response, StError?> {
-	return suspendCoroutine {
-		client.Send(data, headers, object : Client.ResponseHandler {
-			override fun onFailed(error: java.lang.Error, isConnError: Boolean) {
-				it.resume(Pair<Response, StError?>(ByteArray(0), StError(error, isConnError)))
-			}
+	return withContext(dispatcher) {
+		suspendCoroutine {
+			client.Send(data, headers, object : Client.ResponseHandler {
+				override fun onFailed(error: java.lang.Error, isConnError: Boolean) {
+					it.resume(Pair<Response, StError?>(ByteArray(0), StError(error, isConnError)))
+				}
 
-			override fun onSuccess(response: ByteArray) {
-				it.resume(Pair<Response, StError?>(response, null))
-			}
+				override fun onSuccess(response: ByteArray) {
+					it.resume(Pair<Response, StError?>(response, null))
+				}
 
-		})
+			})
+		}
 	}
 }
 
@@ -50,16 +56,19 @@ fun ClientKt.OnPeerClosed(block: () -> UInt) {
 }
 
 suspend fun ClientKt.Recover(): StError? {
-	return suspendCoroutine {
-		client.Recover(object : Client.RecoverHandler {
-			override fun onFailed(error: Error, isConnError: Boolean) {
-				it.resume(StError(error, isConnError))
-			}
+	return withContext(dispatcher) {
+		suspendCoroutine {
+			client.Recover(object : Client.RecoverHandler {
+				override fun onFailed(error: Error, isConnError: Boolean) {
+					it.resume(StError(error, isConnError))
+				}
 
-			override fun onSuccess() {
-				it.resume(null)
-			}
+				override fun onSuccess() {
+					it.resume(null)
+				}
 
-		})
+			})
+		}
 	}
+
 }
