@@ -1,5 +1,7 @@
 package com.anywithyou.stream
 
+import java.net.Socket
+
 class OptionKt (internal val o : Option)
 
 fun Host(host: String): OptionKt {
@@ -12,6 +14,10 @@ fun Port(port: Int): OptionKt {
 
 fun TLS(): OptionKt {
 	return OptionKt(Option.TLS())
+}
+
+fun TLS(strategy: (host: String, port: Int , tcpSocket: Socket)->Socket): OptionKt {
+	return OptionKt(Option.TLS(strategy))
 }
 
 fun ConnectTimeout(duration: DurationKt): OptionKt {

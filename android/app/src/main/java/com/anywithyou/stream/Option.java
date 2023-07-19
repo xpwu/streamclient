@@ -1,10 +1,21 @@
 package com.anywithyou.stream;
 
+import java.net.Socket;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 public class Option {
   static public class Value {
     public String host;
     public int port;
-    public boolean tls;
+    public TLSStrategy tlsStrategy;
     public Duration connectTimeout;
     public Duration heartbeatTime;
     public Duration frameTimeout; // 同一帧里面的数据延时
@@ -17,7 +28,12 @@ public class Option {
       this.heartbeatTime = new Duration(4*Duration.Minute);
       this.frameTimeout = new Duration(5*Duration.Second);
       this.requestTimeout = new Duration(15*Duration.Second);
-      this.tls = false;
+      this.tlsStrategy = new TLSStrategy() {
+        @Override
+        public Socket TLS(String host, int port, Socket tcpSocket) throws SSLHandshakeException {
+          return tcpSocket;
+        }
+      };
     }
   }
 
@@ -40,10 +56,44 @@ public class Option {
   }
 
   static public Option TLS() {
+    return TLS(new TLSStrategy() {
+      @Override
+      public Socket TLS(String host, int port, Socket tcpSocket) throws SSLHandshakeException {
+        SSLSocket sslSocket = null;
+
+        try {
+          SSLContext context = SSLContext.getInstance("TLS");
+          context.init(null, null, null);
+          SSLSocketFactory factory = context.getSocketFactory();
+          sslSocket = (SSLSocket) factory.createSocket(tcpSocket, host, port, true);
+          sslSocket.startHandshake();
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new SSLHandshakeException(e.toString());
+        }
+
+        SSLSession sslSession = sslSocket.getSession();
+        // 使用默认的HostnameVerifier来验证主机名
+        HostnameVerifier hv = HttpsURLConnection.getDefaultHostnameVerifier();
+        if (!hv.verify(host, sslSession)) {
+          try {
+            throw new SSLHandshakeException("Expected " + host + ", got " + sslSession.getPeerPrincipal());
+          } catch (SSLPeerUnverifiedException e) {
+            e.printStackTrace();
+            throw new SSLHandshakeException(e.toString());
+          }
+        }
+
+        return sslSocket;
+      }
+    });
+  }
+
+  static public Option TLS(TLSStrategy strategy) {
     return new Option(new Setter() {
       @Override
       public void configValue(Value value) {
-        value.tls = true;
+        value.tlsStrategy = strategy;
       }
     });
   }

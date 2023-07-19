@@ -24,7 +24,7 @@ public interface Net {
     }
   }
 
-  void connect(String host, int port, boolean tls);
+  void connect(String host, int port, TLSStrategy tls);
   void close();
 
   void send(byte[] content) throws Exception;

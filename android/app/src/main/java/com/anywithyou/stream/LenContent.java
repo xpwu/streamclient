@@ -16,7 +16,11 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -450,7 +454,7 @@ class LenContent implements Net {
       inputThread.start();
     }
 
-    public void connect(String host, int port, boolean tls) {
+    public void connect(String host, int port, TLSStrategy tls) {
       Handler handler = new Handler();
       new Thread(new Runnable() {
         @Override
@@ -459,16 +463,9 @@ class LenContent implements Net {
           try {
             socket.connect(new InetSocketAddress(host, port), (int) config.ConnectTimeout.milliSecond());
 
-            if (tls) {
-              SSLContext context = SSLContext.getInstance("TLS");
-              context.init(null, null, null);
-              SSLSocketFactory factory = context.getSocketFactory();
-              SSLSocket sslSocket = (SSLSocket) factory.createSocket(socket, host, port, true);
-              sslSocket.startHandshake();
-              socket = sslSocket;
-            }
+            socket = tls.TLS(host, port, socket);
 
-            // 发握手数据
+              // 发握手数据
             OutputStream outputStream = socket.getOutputStream();
             outputStream.write(handshake());
             outputStream.flush();
@@ -489,7 +486,7 @@ class LenContent implements Net {
                 onConnected.run(finalSocket);
               }
             });
-          } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+          } catch (IOException e) {
             e.printStackTrace();
             try {
               socket.close();
@@ -632,7 +629,7 @@ class LenContent implements Net {
   }
 
   @Override
-  public void connect(String host, int port, boolean tls) {
+  public void connect(String host, int port, TLSStrategy tls) {
     if (connection != null) {
       connection.invalidAndClose();
     }

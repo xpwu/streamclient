@@ -113,7 +113,7 @@ class ClientImpl {
     // 底层实现不一定每次connect都回调 onConnected，
     // 所以上层通过ConnectState的判断作了逻辑加强，无论底层是否调用都需要
     // 确保逻辑正确
-    this.net.connect(config.host, config.port, config.tls);
+    this.net.connect(config.host, config.port, config.tlsStrategy);
     isAsync.value = true;
   }
 
