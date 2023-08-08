@@ -1,3 +1,5 @@
+@file:JvmName("Duration_Kt")
+
 package com.anywithyou.stream
 
 class DurationKt(internal val d: Long) {

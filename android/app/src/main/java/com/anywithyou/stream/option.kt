@@ -1,3 +1,5 @@
+@file:JvmName("Option_Kt")
+
 package com.anywithyou.stream
 
 import java.net.Socket

@@ -1,3 +1,5 @@
+@file:JvmName("Client_Kt")
+
 package com.anywithyou.stream
 
 import kotlinx.coroutines.Dispatchers
