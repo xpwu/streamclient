@@ -46,28 +46,21 @@ public class MainActivity extends AppCompatActivity {
     request1.Numbers.add(29);
 
     HashMap<String, String> headers = new HashMap<>();
-    headers.put("api", "/Sum");
+    headers.put("api", "/mega");
 
-    Log.w("send", "doing ");
+    Log.w("sending - timestamp", String.valueOf(System.currentTimeMillis()));
 
-    client.connectAndSend(new Gson().toJson(request1).getBytes()
-      , headers, new Client.ResponseHandler() {
-        @Override
-        public void onSuccess(byte[] response) {
-          Response res = new Gson().fromJson(new String(response), Response.class);
-          Log.w("send", "onSuccess---: " + res.Sum);
-//          int sum = 0;
-//          for (Integer num : request1.Numbers) {
-//            sum += num;
-//          }
-        }
+    client.Send("{}".getBytes(), headers, new Client.ResponseHandler() {
+      @Override
+      public void onSuccess(byte[] response) {
+        Log.i("onSuccess - res_length", String.valueOf(response.length) + ", timestamp: " + System.currentTimeMillis());
+      }
 
-        @Override
-        public void onFailed(Error error) {
-          Log.e("send", "onFailed---: ", error);
-        }
-      });
-
+      @Override
+      public void onFailed(Error error, boolean isConnError) {
+        Log.e("onFailed", error.toString() + System.currentTimeMillis());
+      }
+    });
   }
 
   class NetworkChangeReceiver extends BroadcastReceiver {
@@ -86,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  static final String host = "192.168.1.107";
-  static final int port = 8888;
+  static final String host = "192.168.31.123";
+  static final int port = 8080;
 
-  private Client client = new Client(Option.Host(host), Option.Port(port));
+  private final Client client = new Client(Option.Host(host), Option.Port(port));
 }
