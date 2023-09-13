@@ -446,6 +446,10 @@ class LenContent implements Net {
             } catch (IOException e) {
               handleError(handler, new Error(e));
               break;
+            } catch (Exception e) {
+              Log.e("LenContent", "read protocol error, response may be error");
+              handleError(handler, new Error(e));
+              break;
             }
           }
           timerTask.cancel();
