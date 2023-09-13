@@ -106,6 +106,12 @@ public class Client {
     connect(handler);
   }
 
+  @Override
+  protected void finalize() throws Throwable {
+    close();
+    super.finalize();
+  }
+
   // 暂不暴露以下接口，需要进一步验证其稳定性
 
   private void setNet(Net net) {
