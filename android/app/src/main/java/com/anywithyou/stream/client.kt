@@ -51,7 +51,7 @@ fun ClientKt.OnPush(block: (ByteArray) -> Unit) {
 	client.setPushCallback { data -> block(data) }
 }
 
-fun ClientKt.OnPeerClosed(block: () -> UInt) {
+fun ClientKt.OnPeerClosed(block: () -> Unit) {
 	client.setPeerClosedCallback { block() }
 }
 
