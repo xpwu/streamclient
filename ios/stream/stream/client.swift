@@ -16,6 +16,10 @@ public class Client{
     
     impl.setNet(LenContent())
   }
+	
+	deinit {
+		self.close()
+	}
   
   private var impl = ClientImpl()
 }
