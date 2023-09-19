@@ -415,7 +415,7 @@ class LenContent implements Net {
               }
 
               pos = 0;
-              long length = ((0xff & lengthB[0]) << 24)
+              long length = ((long) (0xff & lengthB[0]) << 24)
                 + ((0xff & lengthB[1]) << 16)
                 + ((0xff & lengthB[2]) << 8)
                 + ((0xff & lengthB[3]));
@@ -425,10 +425,11 @@ class LenContent implements Net {
               }
 
               length -= 4;
-              if (length > config.MaxBytes) {
+              // todo: hardcode 1GB. should get from server. but can't use the config.MaxBytes, which is the sending max bytes
+              if (length > (long) 1024 * 1024 * 1024) {
                 handleError(handler,
                   new Error(String.format(Locale.ENGLISH, "send data(len = %d) is too large," +
-                    " must be less than %d Bytes", length, config.MaxBytes)));
+                    " must be less than 1GB", length)));
                 break;
               }
 

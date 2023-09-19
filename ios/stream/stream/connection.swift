@@ -415,8 +415,9 @@ extension Connection {
       }
       
       len -= 4
-			if (len > maxBytes) {
-				onError(StmError.ElseError(String(format: "received data(len = %d) is too large, must be less than %d Bytes", len, maxBytes)))
+			// todo: hardcode 1GB. should get from server. but can't use the config.MaxBytes, which is the sending max bytes
+			if (len > 1 * 1024 * 1024 * 1024) {
+				onError(StmError.ElseError(String(format: "received data(len = %d) is too large, must be less than 1GB", len)))
 				return
 			}
 			
