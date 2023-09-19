@@ -164,7 +164,7 @@ extension Connection {
 extension Connection {
   func send(_ data:[Byte])->Error? {
     if data.count > maxBytes {
-      return StmError.ElseError(String(format: "data is too large, must be less than %d Bytes", maxBytes))
+      return StmError.ElseError(String(format: "send data(len = %d) is too large, must be less than %d Bytes", data.count, maxBytes))
     }
     
     waitForSending.append(data)
@@ -415,13 +415,18 @@ extension Connection {
       }
       
       len -= 4
+			if (len > maxBytes) {
+				onError(StmError.ElseError(String(format: "received data(len = %d) is too large, must be less than %d Bytes", len, maxBytes)))
+				return
+			}
+			
       read = readContent(len: len)
     }
   }
   
   private func readContent(len:UInt32)->()->Void {
     var pos = 0
-    var content = [Byte](repeating: 0, count: Int(len))
+		var content = [Byte](repeating: 0, count: Int(len))
     initInputFrameTimeout()
     
     return {[unowned self]()->Void in
