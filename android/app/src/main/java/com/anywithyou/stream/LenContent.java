@@ -12,6 +12,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -424,6 +425,13 @@ class LenContent implements Net {
               }
 
               length -= 4;
+              if (length > config.MaxBytes) {
+                handleError(handler,
+                  new Error(String.format(Locale.ENGLISH, "send data(len = %d) is too large," +
+                    " must be less than %d Bytes", length, config.MaxBytes)));
+                break;
+              }
+
               final byte[] data = new byte[(int) length];
               while (length - pos != 0 && n > 0) {
                 timerTask = inputFrameTimer(handler, timerTask);
@@ -571,7 +579,7 @@ class LenContent implements Net {
 
     public void send(byte[] content) throws Exception {
       if (content.length > config.MaxBytes) {
-        throw new Exception(String.format("data is too large, must be less than %d Bytes", config.MaxBytes));
+        throw new Exception(String.format("send data(len = %d) is too large, must be less than %d Bytes", content.length, config.MaxBytes));
       }
 
       waitForSending.add(content);
