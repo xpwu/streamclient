@@ -145,8 +145,14 @@ class ClientImpl {
         mainHandler.post(new Runnable() {
           @Override
           public void run() {
-            allRequests.remove(reqId);
-            handler.onFailed(new Error("request timeout"), false);
+            // 必须要再次判断是否需要执行onFailed。因为这里是异步，有可能定时器已经执行但是此Runnable还没有
+            // 在handler中执行，此时服务器响应回来了，在正常的响应(onResponse)中已经无法取消定时器了(因为定
+            // 时器已经执行了)，并向上层返回了onSuccess，然后此Runnable会再次被handler执行，如果不判断，就会
+            // 再次执行onFailed，从而出现两个返回的bug。
+            // 使用 allRequests 是否包含reqId 作为判断标准，任何地方执行了reqId的响应后，都必须立即删除此reqId
+            if (allRequests.remove(reqId) != null) {
+              handler.onFailed(new Error("request timeout"), false);
+            }
           }
         });
       }
@@ -229,13 +235,14 @@ class ClientImpl {
 
         net.receivedOneResponse();
 
-        ResponseHandler r = allRequests.get(response.reqID);
+        // 这里直接调用allRequests.remove(response.reqID)代替get函数更合适，确保已删除
+        ResponseHandler r = allRequests.remove(response.reqID);
         if (r == null) {
-          Log.e("client", "onMessage: not find response handler for " + response.reqID);
+          // 这里由error修改为warning，不存在ResponseHandler也可能是一种正常的情况，比如：超时后才收到服务器的response
+          Log.w("client", "onMessage: not find response handler for " + response.reqID);
           return;
         }
         r.onResponse(response);
-        allRequests.remove(response.reqID);
       }
 
       @Override
