@@ -174,7 +174,8 @@ class LenContent implements Net {
         closeSocketAtMain(socket);
       }
 
-      timer.cancel();
+      // 不主动执行 timer.cancel，让其自己优雅的结束，注意及时释放TimerTask，防止资源占用过久
+//      timer.cancel();
     }
 
     public void invalidAndClose() {
@@ -335,8 +336,11 @@ class LenContent implements Net {
               handleError(handler, new Error(e));
               break;
             }
+            // TimerTask->cancel 执行了多次，及时在Timer中释放一次
+            timer.purge();
           }
           timerTask.cancel();
+          timer.purge();
         }
       });
       outputThread.start();
@@ -460,8 +464,11 @@ class LenContent implements Net {
               handleError(handler, new Error(e));
               break;
             }
+            // TimerTask->cancel 执行了多次，及时在Timer中释放一次
+            timer.purge();
           }
           timerTask.cancel();
+          timer.purge();
         }
       });
       inputThread.start();
