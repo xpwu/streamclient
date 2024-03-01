@@ -137,27 +137,21 @@ class ClientImpl {
 
     long reqId = reqId();
 
-    Handler mainHandler = new Handler();
-
-    TimerTask timerTask = new TimerTask() {
+    // TimerTask cancel() 在资源清除上有延时性，故没有使用Timer
+    Runnable timeoutR = new Runnable() {
       @Override
       public void run() {
-        mainHandler.post(new Runnable() {
-          @Override
-          public void run() {
-            // 必须要再次判断是否需要执行onFailed。因为这里是异步，有可能定时器已经执行但是此Runnable还没有
-            // 在handler中执行，此时服务器响应回来了，在正常的响应(onResponse)中已经无法取消定时器了(因为定
-            // 时器已经执行了)，并向上层返回了onSuccess，然后此Runnable会再次被handler执行，如果不判断，就会
-            // 再次执行onFailed，从而出现两个返回的bug。
-            // 使用 allRequests 是否包含reqId 作为判断标准，任何地方执行了reqId的响应后，都必须立即删除此reqId
-            if (allRequests.remove(reqId) != null) {
-              handler.onFailed(new Error("request timeout"), false);
-            }
-          }
-        });
-      }
-    };
-    timer.schedule(timerTask, config.requestTimeout.milliSecond());
+        // 必须要再次判断是否需要执行onFailed。防止handler的定时器已经执行但是此Runnable还没有
+        // 在handler中执行，此时服务器响应回来了，在正常的响应(onResponse)中已经无法取消定时器了(因为定
+        // 时器已经执行了)，并向上层返回了onSuccess，然后此Runnable会再次被handler执行，如果不判断，就会
+        // 再次执行onFailed，从而出现两个返回的bug。如果使用Timer与TimerTask实现，更要注意这种情况。
+        // 使用 allRequests 是否包含reqId 作为判断标准，任何地方执行了reqId的响应后，都必须立即删除此reqId
+        if (allRequests.remove(reqId) != null) {
+          handler.onFailed(new Error("request timeout"), false);
+        }
+      }};
+
+    new Handler().postDelayed(timeoutR, config.requestTimeout.milliSecond());
 
     // 防止Net的回调实现为同步，而不满足这一层回调都必须异步的要求
     FinalValue<Boolean> isAsync = new FinalValue<>(false);
@@ -165,7 +159,7 @@ class ClientImpl {
     allRequests.put(reqId, new ResponseHandler() {
       @Override
       public void onResponse(FakeHttp.Response response) {
-        timerTask.cancel();
+        new Handler().removeCallbacks(timeoutR);
 
         if (response.status != FakeHttp.Response.Status.Ok) {
           if (!isAsync.value) {
@@ -191,7 +185,7 @@ class ClientImpl {
       isAsync.value = true;
     } catch (Exception e) {
       allRequests.remove(reqId);
-      timerTask.cancel();
+      new Handler().removeCallbacks(timeoutR);
       asyncErr(handler, new Error(e), true);
     }
   }
@@ -312,6 +306,4 @@ class ClientImpl {
     void onResponse(FakeHttp.Response response);
   }
   private final Map<Long, ResponseHandler> allRequests = new HashMap<>();
-
-  private final Timer timer = new Timer();
 }
