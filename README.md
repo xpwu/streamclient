@@ -1,4 +1,8 @@
 # streamclient
+
+2.x 在 [swift](https://github.com/xpwu/swift-streamclient) [kotlin](https://github.com/xpwu/kt-streamclient) [typescript](https://github.com/xpwu/ts-streamclient) 
+请优先使用2.x。此1.x的仓库可能会不再维护。   
+
 go-stream 对应的客户端sdk，包括ios android web wxapp。
 其中web的代码仓库在[这儿](https://github.com/xpwu/ts-streamclient-browser)，
 wxapp的代码仓库在[这儿](https://github.com/xpwu/ts-streamclient-wxapp)，
